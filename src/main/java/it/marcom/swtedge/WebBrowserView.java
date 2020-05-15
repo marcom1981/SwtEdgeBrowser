@@ -330,6 +330,7 @@ abstract class WebBrowserView {
     }
 
     public void createFunction (BrowserViewFunction function) {
+
         /*
          * If an existing function with the same name is found then
          * remove it so that it is not recreated on subsequent pages
@@ -474,6 +475,7 @@ abstract class WebBrowserView {
         if (result instanceof SWTException) throw (SWTException)result;
         return result;
     }
+
 
     public abstract boolean forward ();
 

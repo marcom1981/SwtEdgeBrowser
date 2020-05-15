@@ -3,3 +3,17 @@ target/*
 .idea
 .idea/*
 *.iml
+native/webview/webview/x64
+native/webview/webview/x64/*
+native/webview/webview/Debug
+native/webview/webview/Debug/*
+native/webview/webview/Release
+native/webview/webview/Release/*
+native/webview/x64
+native/webview/x64/*
+native/webview/Debug
+native/webview/Debug/*
+native/webview/Release
+native/webview/Release/*
+.vs
+.vs/*

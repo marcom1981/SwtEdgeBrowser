@@ -1,19 +1,12 @@
 package it.marcom.swtedge;
 
 
-import it.marcom.swtedge.nat.NativeEdge;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
-import org.eclipse.swt.browser.*;
-import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
-
-import java.io.File;
-import java.io.FilenameFilter;
-import java.net.MalformedURLException;
 
 
 public class SwtEdgeTest {

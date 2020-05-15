@@ -1,18 +1,18 @@
 /**
  * MIT License
- *
+ * <p>
  * Copyright (c) 2020 Marco Monacelli
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,11 +23,11 @@
  */
 package it.marcom.swtedge;
 
-import ca.weblite.webview.WebViewCLIClient;
-import ca.weblite.webview.WebViewNative;
-import ca.weblite.webview.WebViewNativeCallback;
-import ca.weblite.webview.WebViewServer;
+import it.marcom.swtedge.nat.EvaluationCallBack;
+import it.marcom.swtedge.nat.NativeEdge;
+import it.marcom.swtedge.nat.WebViewNativeCallback;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.internal.Callback;
 import org.eclipse.swt.internal.LONG;
 import org.eclipse.swt.internal.win32.MSG;
@@ -37,14 +37,20 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 
 import java.awt.*;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class EdgeBrowser extends WebBrowserView {
     // Opening the webview
-    private WebViewCLIClient webview = null;
-    private Frame frame;
-    private long peer;
-    Composite parent;
 
+    private Frame frame;
+
+    Composite parent;
+    private NativeEdge edge = null;
     private static String HHOOK = "WEBVIEW_HHOOK"; //$NON-NLS-1$
     private static String HHOOKMSG = "WEBVIEW_HHOOK_MSG";
 
@@ -63,28 +69,25 @@ public class EdgeBrowser extends WebBrowserView {
 
         String onLoad;
         boolean useMessageBoundaries = false;
-        WebViewServer server = null;
 
 
-        peer = WebViewNative.webviewCreate(0, parent.handle);
+        edge = new NativeEdge(parent.handle);
         WebViewNativeCallback fn = new WebViewNativeCallback() {
             @Override
-            public void invoke(String s, long l) {
-                System.out.println("prova");
+            public String invoke(String s, long l) {
+                //WebViewNative.webview_eval(peer,"alert(\"provata\")",null);
+                return "\"provata\"";
             }
         };
-        WebViewNative.webview_bind(peer, "prova", fn, peer);
-        WebViewNative.webview_set_bounds(peer, 0, 0, parent.getSize().x, parent.getSize().y, 0);
+        edge.bind("prova", fn);
+        edge.setBounds(0, 0, parent.getSize().x, parent.getSize().y, 0);
 
         parent.addListener(SWT.Resize, new Listener() {
             @Override
             public void handleEvent(org.eclipse.swt.widgets.Event event) {
-                WebViewNative.webview_set_bounds(peer, 0, 0, parent.getSize().x, parent.getSize().y, 0);
+                edge.setBounds(0, 0, parent.getSize().x, parent.getSize().y, 0);
             }
         });
-
-//        WebViewNative.webview_navigate(peer, "https://www.google.it");
-//        browser.handle = WebViewNative.webview_get_window(peer);
 
         initMsgHook(browser.getDisplay());
 
@@ -119,9 +122,62 @@ public class EdgeBrowser extends WebBrowserView {
     }
 
     @Override
-    public boolean execute(String s) {
-        WebViewNative.webview_eval(peer, s);
+    public Object evaluate(String script) throws SWTException {
+        EvaluateFuture future = new EvaluateFuture();
+        edge.eval(script, future);
+        try {
+            boolean trovato = false;
+            while (true) {
+                try {
+                    return future.getFuture().get(1, TimeUnit.MILLISECONDS);
+                } catch (TimeoutException e) {
+                    browser.getDisplay().readAndDispatch();
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public boolean execute(String script) {
+
+        //Da decomentare e capire se è sincrona o asincrona
+        //Per ora facciamo asincrona
+        edge.eval(script, null);
+//        EvaluateFuture future = new EvaluateFuture();
+//        edge.eval(script, future);
+//        try {
+//            boolean trovato = false;
+//            while(true) {
+//                try {
+//                    future.getFuture().get(1, TimeUnit.MILLISECONDS);
+//                    break;
+//                } catch (TimeoutException e) {
+//                    browser.getDisplay().readAndDispatch();
+//                }
+//            }
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        } catch (ExecutionException e) {
+//            e.printStackTrace();
+//        }
+
         return true;
+//        EvaluateFuture future = new EvaluateFuture();
+//        WebViewNative.webview_eval(peer, script, new EvaluationCallBack() {
+//            @Override
+//            public void invoke(int i, String s) {
+//                System.out.println("Status " + i);
+//                System.out.println("Value " + s);
+//            }
+//        });
+//        browser.getDisplay().readAndDispatch();
+//        return true;
     }
 
     @Override
@@ -161,18 +217,40 @@ public class EdgeBrowser extends WebBrowserView {
 
     @Override
     public boolean setText(String s, boolean b) {
-        WebViewNative.webview_navigate(peer, "data:text/html," + s);
+        try {
+            edge.navigate("data:text/html," + URLEncoder.encode(s, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         return true;
     }
 
     @Override
     public boolean setUrl(String s, String s1, String[] strings) {
-        WebViewNative.webview_navigate(peer, s);
+        edge.navigate(s);
         return true;
     }
 
     @Override
     public void stop() {
 
+    }
+
+    private class EvaluateFuture implements EvaluationCallBack {
+
+        CompletableFuture<String> future = new CompletableFuture<String>();
+
+        @Override
+        public void invoke(int i, String s) {
+            if (i == 0) {
+                future.complete(s);
+            } else {
+                future.cancel(false);
+            }
+        }
+
+        public CompletableFuture<String> getFuture() {
+            return future;
+        }
     }
 }

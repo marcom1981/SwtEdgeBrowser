@@ -14,6 +14,7 @@ public class SwtIETest {
     static Browser browser;
     static String[] titles;
     static int index;
+
     public static void main(String[] args) {
         Display display = new Display();
         final Shell shell = new Shell(display);
@@ -26,12 +27,15 @@ public class SwtIETest {
 
         ToolBar navBar = new ToolBar(compTools, SWT.NONE);
         navBar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.HORIZONTAL_ALIGN_END));
-        final ToolItem back = new ToolItem(navBar, SWT.PUSH);
-        back.setText("Back");
-        back.setEnabled(false);
-        final ToolItem forward = new ToolItem(navBar, SWT.PUSH);
-        forward.setText("Forward");
-        forward.setEnabled(false);
+        final ToolItem execute = new ToolItem(navBar, SWT.PUSH);
+        execute.setText("Execute Script");
+
+        final ToolItem evaluate = new ToolItem(navBar, SWT.PUSH);
+        evaluate.setText("Evaluate Script");
+
+        final ToolItem navigate = new ToolItem(navBar, SWT.PUSH);
+        navigate.setText("Navigate");
+
 
         Composite comp = new Composite(shell, SWT.NONE);
         data = new GridData(GridData.FILL_BOTH);
@@ -48,37 +52,61 @@ public class SwtIETest {
             System.exit(-1);
         }
 
-        browser.setUrl("https://www.google.it");
-        back.addListener(SWT.Selection, new Listener() {
+        //        browser.setUrl("https://www.google.it");
+
+        browser.setText("<!doctype html>\n" +
+                "		<html>\n" +
+                "			<body>\n" +
+                "           <script>" +
+                "           function add(a,b){" +
+                "               return a+b;"+
+                "           }"+
+                "           window.onload = function() {\n" +
+                "                   var text = \"Browser Info:\" +navigator.userAgent;" +
+                "					document.getElementById(\"browser\").innerText =text\n" +
+                "				};\n" +
+                "           </script>" +
+                "               <div>" +
+                "                   <p id=\"browser\"></p>" +
+                "               </div>" +
+                "               <div>" +
+                "                   <p>Test</p>" +
+                "                   <button onClick=\"alert('ciao')\">Test Script</button>" +
+                "               </div>" +
+                "           </body>\n" +
+                "            \n" +
+                "		</html>");
+
+        execute.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event event) {
-                browser.back();
+                browser.execute("alert(add(2,3));");
             }
         });
 
 
-        forward.addListener(SWT.Selection, new Listener() {
+        evaluate.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event event) {
-                browser.forward();
+                System.out.println(browser.evaluate("return(add(2,3));"));
+            }
+        });
+
+        navigate.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event event) {
+                browser.setUrl("https://www.google.it");
             }
         });
 
         final LocationListener locationListener = new LocationListener() {
             public void changed(LocationEvent event) {
-                Browser browser = (Browser)event.widget;
-                back.setEnabled(browser.isBackEnabled());
-                forward.setEnabled(browser.isForwardEnabled());
+                Browser browser = (Browser) event.widget;
+                execute.setEnabled(browser.isBackEnabled());
+                navigate.setEnabled(browser.isForwardEnabled());
             }
+
             public void changing(LocationEvent event) {
             }
         };
-        /* Build a table of contents. Open each HTML file
-         * found in the given folder to retrieve their title.
-         */
-        final TitleListener tocTitleListener = new TitleListener() {
-            public void changed(TitleEvent event) {
-                titles[index] = event.title;
-            }
-        };
+
 
         shell.open();
         while (!shell.isDisposed()) {
