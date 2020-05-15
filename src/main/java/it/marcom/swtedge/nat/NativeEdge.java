@@ -157,8 +157,9 @@ public class NativeEdge {
                 // problems with Web Start.
                 File dir = new File(getTempDir().getAbsolutePath() + File.separator + "webview" + rnd.nextInt());
                 dir.mkdirs();
+                dir.deleteOnExit();
                 lib = new File(dir.getAbsolutePath() + File.separator + libname);
-
+                lib.deleteOnExit();
                 fos = new FileOutputStream(lib);
                 int count;
                 byte[] buf = new byte[8192];
