@@ -1,0 +1,1620 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.Web.WebView2.Core</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2">
+            <summary>
+            WebView2 enables you to host web content using the latest Edge web browser technology.
+            </summary>
+            <summary>
+            WebView2 enables you to host web content using the latest Edge web browser technology.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2.Initialize">
+            <summary>
+            Add .Net specific host object helper for the CoreWebView2 so that it can
+            figure out whether a member is a method of an object.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2.Settings">
+            <summary>
+            The CoreWebView2Settings object contains various modifiable settings for the running
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2.Source">
+            <summary>
+            The URI of the current top level document.
+            </summary>
+            <remarks>
+            This value potentially changes as a part of the SourceChanged event firing for some cases such as navigating to a different site or fragment navigations. It will remain the same for other types of navigations such as page reloads or history.pushState with the same URL as the current page.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2.BrowserProcessId">
+            <summary>
+            The process id of the browser process that hosts the WebView.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2.CanGoBack">
+            <summary>
+            Returns true if the webview can navigate to a previous page in the navigation history.
+            </summary>
+            <remarks>
+            The HistoryChanged event will fire if CanGoBack changes value.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2.CanGoForward">
+            <summary>
+            Returns true if the webview can navigate to a next page in the navigation history.
+            </summary>
+            <remarks>
+            The HistoryChanged event will fire if CanGoForward changes value.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2.DocumentTitle">
+            <summary>
+            The title for the current top level document.
+            </summary>
+            <remarks>
+            If the document has no explicit title or is otherwise empty, a default that may or may not match the URI of the document will be used.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2.ContainsFullScreenElement">
+            <summary>
+            Indicates if the WebView contains a fullscreen HTML element.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2.NavigationStarting">
+            <summary>
+            NavigationStarting fires when the WebView main frame is requesting permission to navigate to a different URI.
+            </summary>
+            <remarks>
+            This will fire for redirects as well.
+            </remarks>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2.ContentLoading">
+            <summary>
+            ContentLoading fires before any content is loaded, including scripts added with AddScriptToExecuteOnDocumentCreated ContentLoading will not fire if a same page navigation occurs (such as through fragment navigations or history.pushState navigations).
+            </summary>
+            <remarks>
+            This follows the NavigationStarting and SourceChanged events and precedes the HistoryChanged and NavigationCompleted events.
+            </remarks>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2.SourceChanged">
+            <summary>
+            SourceChanged fires when the Source property changes.
+            </summary>
+            <remarks>
+            SourceChanged fires for navigating to a different site or fragment navigations. It will not fires for other types of navigations such as page reloads or history.pushState with the same URL as the current page. SourceChanged fires before ContentLoading for navigation to a new document. Add an event handler for the SourceChanged event.
+            </remarks>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2.HistoryChanged">
+            <summary>
+            HistoryChange listen to the change of navigation history for the top level document.
+            </summary>
+            <remarks>
+            Use HistoryChange to check if CanGoBack/CanGoForward value has changed. HistoryChanged also fires for using GoBack/GoForward. HistoryChanged fires after SourceChanged and ContentLoading. Add an event handler for the HistoryChanged event.
+            </remarks>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2.NavigationCompleted">
+            <summary>
+            NavigationCompleted event fires when the WebView has completely loaded (body.onload has fired) or loading stopped with error.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2.FrameNavigationStarting">
+            <summary>
+            FrameNavigationStarting fires when a child frame in the WebView requesting permission to navigate to a different URI.
+            </summary>
+            <remarks>
+            This will fire for redirects as well.
+            </remarks>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2.FrameNavigationCompleted">
+            <summary>
+            FrameNavigationCompleted event fires when a child frame has completely loaded (body.onload has fired) or loading stopped with error.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2.ScriptDialogOpening">
+            <summary>
+            The event fires when a JavaScript dialog (alert, confirm, or prompt) will show for the webview.
+            </summary>
+            <remarks>
+            This event only fires if the CoreWebView2Settings.AreDefaultScriptDialogsEnabled property is set to false. The ScriptDialogOpening event can be used to suppress dialogs or replace default dialogs with custom dialogs.
+            </remarks>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2.PermissionRequested">
+            <summary>
+            Fires when content in a WebView requests permission to access some privileged resources.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2.ProcessFailed">
+            <summary>
+            Fires when a WebView process terminated unexpectedly or become unresponsive.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2.WebMessageReceived">
+            <summary>
+            This event fires when the IsWebMessageEnabled setting is set and the top level document of the webview calls <c>window.chrome.webview.postMessage</c>.
+            </summary>
+            <remarks>
+            The postMessage function is <c>void postMessage(object)</c> where object is any object supported by JSON conversion.
+            When postMessage is called, the CoreWebView2WebMessageReceivedEventHandler set will be invoked with the postMessage's object parameter converted to a JSON string.
+            </remarks>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2.NewWindowRequested">
+            <summary>
+            Fires when content inside the WebView requested to open a new window, such as through window.open.
+            </summary>
+            <remarks>
+            The app can pass a target webview that will be considered the opened window.
+            </remarks>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2.DocumentTitleChanged">
+            <summary>
+            The event fires when the DocumentTitle property of the WebView changes and may fire before or after the NavigationCompleted event.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2.ContainsFullScreenElementChanged">
+            <summary>
+            Notifies when the ContainsFullScreenElement property changes.
+            </summary>
+            <remarks>
+            This means that an HTML element inside the WebView is entering fullscreen to the size of the WebView or leaving fullscreen. This event is useful when, for example, a video element requests to go fullscreen. The listener of ContainsFullScreenElementChanged can then resize the WebView in response.
+            </remarks>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2.WebResourceRequested">
+            <summary>
+            Fires when the WebView is performing an HTTP request to a matching URL and resource context filter that was added with AddWebResourceRequestedFilter.
+            </summary>
+            <remarks>
+            At least one filter must be added for the event to fire.
+            </remarks>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2.WindowCloseRequested">
+            <summary>
+            Fires when content inside the WebView requested to close the window, such as after window.close is called.
+            </summary>
+            <remarks>
+            The app should close the WebView and related app window if that makes sense to the app.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2.Navigate(System.String)">
+            <summary>
+            Cause a navigation of the top level document to the specified URI.
+            </summary>
+            <remarks>
+            See the navigation events for more information. Note that this starts a navigation and the corresponding NavigationStarting event will fire sometime after this Navigate call completes.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2.NavigateToString(System.String)">
+            <summary>
+            Initiates a navigation to htmlContent as source HTML of a new document.
+            </summary>
+            <remarks>
+            The htmlContent parameter may not be larger than 2 MB of characters. The origin of the new page will be about:blank.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(System.String)">
+            <summary>
+            Add the provided JavaScript to a list of scripts that should be executed after the global object has been created, but before the HTML document has been parsed and before any other script included by the HTML document is executed.
+            </summary>
+            <remarks>
+            The injected script will apply to all future top level document and child frame navigations until removed with RemoveScriptToExecuteOnDocumentCreated. This is applied asynchronously and you must wait for the completion handler to run before you can be sure that the script is ready to execute on future navigations.
+            
+            Note that if an HTML document has sandboxing of some kind via [sandbox](https://developer.mozilla.org/docs/Web/HTML/Element/iframe#attr-sandbox) properties or the [Content-Security-Policy HTTP header](https://developer.mozilla.org/docs/Web/HTTP/Headers/Content-Security-Policy) this will affect the script run here. So, for example, if the 'allow-modals' keyword is not set then calls to the <c>alert</c> function will be ignored.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2.RemoveScriptToExecuteOnDocumentCreated(System.String)">
+            <summary>
+            Remove the corresponding JavaScript added via AddScriptToExecuteOnDocumentCreated.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2.ExecuteScriptAsync(System.String)">
+            <summary>
+            Execute JavaScript code from the javascript parameter in the current top level document rendered in the WebView.
+            </summary>
+            <remarks>
+            This will execute asynchronously and when complete, if a handler is provided in the ExecuteScriptCompletedHandler parameter, its Invoke method will be called with the result of evaluating the provided JavaScript. The result value is a JSON encoded string. If the result is undefined, contains a reference cycle, or otherwise cannot be encoded into JSON, the JSON null value will be returned as the string 'null'. Note that a function that has no explicit return value returns undefined. If the executed script throws an unhandled exception, then the result is also 'null'. This method is applied asynchronously. If the method is called after NavigationStarting event during a navigation, the script will be executed in the new document when loading it, around the time ContentLoading is fired. ExecuteScript will work even if IsScriptEnabled is set to FALSE.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2.CapturePreviewAsync(Microsoft.Web.WebView2.Core.CoreWebView2CapturePreviewImageFormat,System.IO.Stream)">
+            <summary>
+            Capture an image of what WebView is displaying.
+            </summary>
+            <remarks>
+            Specify the format of the image with the imageFormat parameter. The resulting image binary data is written to the provided imageStream parameter. When CapturePreview finishes writing to the stream, the Invoke method on the provided handler parameter is called.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2.Reload">
+            <summary>
+            Reload the current page.
+            </summary>
+            <remarks>
+            This is similar to navigating to the URI of current top level document including all navigation events firing and respecting any entries in the HTTP cache. But, the back/forward history will not be modified.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2.PostWebMessageAsJson(System.String)">
+            <summary>
+            Post the specified webMessage to the top level document in this WebView.
+            </summary>
+            <remarks>
+            The top level document's window.chrome.webview's message event fires. JavaScript in that document may subscribe and unsubscribe to the event via the following:
+            
+            <code>
+            window.chrome.webview.addEventListener('message', handler)
+            window.chrome.webview.removeEventListener('message', handler)
+            </code>
+            
+            The event args is an instance of <c>MessageEvent</c>. The CoreWebView2Settings.IsWebMessageEnabled setting must be true or this method will fail with E_INVALIDARG. The event arg's data property is the webMessage string parameter parsed as a JSON string into a JavaScript object. The event arg's source property is a reference to the <c>window.chrome.webview</c> object. See SetWebMessageReceivedEventHandler for information on sending messages from the HTML document in the webview to the host. This message is sent asynchronously. If a navigation occurs before the message is posted to the page, then the message will not be sent.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2.PostWebMessageAsString(System.String)">
+            <summary>
+            This is a helper for posting a message that is a simple string rather than a JSON string representation of a JavaScript object.
+            </summary>
+            <remarks>
+            This behaves in exactly the same manner as PostWebMessageAsJson but the <c>window.chrome.webview</c> message event arg's data property will be a string with the same value as webMessageAsString. Use this instead of PostWebMessageAsJson if you want to communicate via simple strings rather than JSON objects.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2.CallDevToolsProtocolMethodAsync(System.String,System.String)">
+            <summary>
+            Call an asynchronous DevToolsProtocol method.
+            </summary>
+            <remarks>
+            See the [DevTools Protocol Viewer](https://aka.ms/DevToolsProtocolDocs) for a list and description of available methods. The methodName parameter is the full name of the method in the format <c>{domain}.{method}</c>. The parametersAsJson parameter is a JSON formatted string containing the parameters for the corresponding method. The handler's Invoke method will be called when the method asynchronously completes. Invoke will be called with the method's return object as a JSON string.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2.GoBack">
+            <summary>
+            Navigates the WebView to the previous page in the navigation history.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2.GoForward">
+            <summary>
+            Navigates the WebView to the next page in the navigation history.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2.GetDevToolsProtocolEventReceiver(System.String)">
+            <summary>
+            Get a DevTools Protocol event receiver that allows you to subscribe to a DevTools Protocol event.
+            </summary>
+            <remarks>
+            See the [DevTools Protocol Viewer](https://aka.ms/DevToolsProtocolDocs) for a list and description of available methods. The methodName parameter is the full name of the method in the format <c>{domain}.{method}</c>. The parametersAsJson parameter is a JSON formatted string containing the parameters for the corresponding method. The handler's Invoke method will be called when the method asynchronously completes. Invoke will be called with the method's return object as a JSON string.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2.Stop">
+            <summary>
+            Stop all navigations and pending resource fetches.
+            </summary>
+            <remarks>
+            Does not stop scripts.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2.AddHostObjectToScript(System.String,System.Object)">
+            <summary>
+            Add the provided host object to script running in the WebView with the specified name.
+            </summary>
+            <remarks>
+            Host objects are exposed as host object proxies via <c>window.chrome.webview.hostObjects.{name}</c>. Host object proxies are promises and will resolve to an object representing the host object.
+            JavaScript code in the WebView will be able to access appObject as following and then access attributes and methods of appObject: 
+            <code>
+            let app_object = await window.chrome.webview.hostObjects.host_object;
+            let attr1 = await app_object.attr1;
+            let result = await app_object.method1(parameters);
+            </code>
+            Note that while simple types, IDispatch and array are supported, generic IUnknown, VT_DECIMAL, or VT_RECORD variant is not supported. Remote JavaScript objects like callback functions are represented as an VT_DISPATCH VARIANT with the object implementing IDispatch. The JavaScript callback method may be invoked using DISPID_VALUE for the DISPID. Nested arrays are supported up to a depth of 3. Arrays of by reference types are not supported. VT_EMPTY and VT_NULL are mapped into JavaScript as null. In JavaScript null and undefined are mapped to VT_EMPTY.
+            
+            Additionally, all host objects are exposed as <c>window.chrome.webview.hostObjects.sync.{name}</c>. Here the host objects are exposed as synchronous host object proxies. These are not promises and calls to functions or property access synchronously block running script waiting to communicate cross process for the host code to run. Accordingly this can result in reliability issues and it is recommended that you use the promise based asynchronous <c>window.chrome.webview.hostObjects.{name}</c> API described above.
+            
+            Synchronous host object proxies and asynchronous host object proxies can both proxy the same host object. Remote changes made by one proxy will be reflected in any other proxy of that same host object whether the other proxies and synchronous or asynchronous.
+            
+            While JavaScript is blocked on a synchronous call to native code, that native code is unable to call back to JavaScript. Attempts to do so will fail with HRESULT_FROM_WIN32(ERROR_POSSIBLE_DEADLOCK).
+            
+            Host object proxies are JavaScript Proxy objects that intercept all property get, property set, and method invocations. Properties or methods that are a part of the Function or Object prototype are run locally. Additionally any property or method in the array <c>chrome.webview.hostObjects.options.forceLocalProperties</c> will also be run locally. This defaults to including optional methods that have meaning in JavaScript like <c>toJSON</c> and <c>Symbol.toPrimitive</c>. You can add more to this array as required.
+            
+            There's a method <c>chrome.webview.hostObjects.cleanupSome</c> that will best effort garbage collect host object proxies.
+            
+            Host object proxies additionally have the following methods which run locally:
+            
+            * applyHostFunction, getHostProperty, setHostProperty: Perform a method invocation, property get, or property set on the host object. You can use these to explicitly force a method or property to run remotely if there is a conflicting local method or property. For instance, <c>proxy.toString()</c> will run the local toString method on the proxy object. But <c>proxy.applyHostFunction('toString')</c> runs <c>toString</c> on the host proxied object instead.
+            
+            * getLocalProperty, setLocalProperty: Perform property get, or property set locally. You can use these methods to force getting or setting a property on the host object proxy itself rather than on the host object it represents. For instance, <c>proxy.unknownProperty</c> will get the property named <c>unknownProperty</c> from the host proxied object. But <c>proxy.getLocalProperty('unknownProperty')</c> will get the value of the property <c>unknownProperty</c> on the proxy object itself.
+            
+            * sync: Asynchronous host object proxies expose a sync method which returns a promise for a synchronous host object proxy for the same host object. For example, <c>chrome.webview.hostObjects.sample.methodCall()</c> returns an asynchronous host object proxy. You can use the <c>sync</c> method to obtain a synchronous host object proxy instead: <c>const syncProxy = await chrome.webview.hostObjects.sample.methodCall().sync()</c>
+            
+            * async: Synchronous host object proxies expose an async method which blocks and returns an asynchronous host object proxy for the same host object. For example, <c>chrome.webview.hostObjects.sync.sample.methodCall()</c> returns a synchronous host object proxy. Calling the <c>async</c> method on this blocks and then returns an asynchronous host object proxy for the same host object: <c>const asyncProxy = chrome.webview.hostObjects.sync.sample.methodCall().async()</c>
+            
+            * then: Asynchronous host object proxies have a then method. This allows them to be awaitable. <c>then</c> will return a promise that resolves with a representation of the host object. If the proxy represents a JavaScript literal then a copy of that is returned locally. If the proxy represents a function then a non-awaitable proxy is returned. If the proxy represents a JavaScript object with a mix of literal properties and function properties, then the a copy of the object is returned with some properties as host object proxies.
+            
+            All other property and method invocations (other than the above Remote object proxy methods, forceLocalProperties list, and properties on Function and Object prototypes) are run remotely. Asynchronous host object proxies return a promise representing asynchronous completion of remotely invoking the method, or getting the property. The promise resolves after the remote operations complete and the promises resolve to the resulting value of the operation. Synchronous host object proxies work similarly but block JavaScript execution and wait for the remote operation to complete.
+            
+            Setting a property on an asynchronous host object proxy works slightly differently. The set returns immediately and the return value is the value that will be set. This is a requirement of the JavaScript Proxy object. If you need to asynchronously wait for the property set to complete, use the setHostProperty method which returns a promise as described above. Synchronous object property set property synchronously blocks until the property is set.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2.RemoveHostObjectFromScript(System.String)">
+            <summary>
+            Remove the host object specified by the name so that it is no longer accessible from JavaScript code in the WebView.
+            </summary>
+            <remarks>
+            While new access attempts will be denied, if the object is already obtained by JavaScript code in the WebView, the JavaScript code will continue to have access to that object. Calling this method for a name that is already removed or never added will fail.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2.OpenDevToolsWindow">
+            <summary>
+            Opens the DevTools window for the current document in the WebView.
+            </summary>
+            <remarks>
+            Does nothing if called when the DevTools window is already open.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2.AddWebResourceRequestedFilter(System.String,Microsoft.Web.WebView2.Core.CoreWebView2WebResourceContext)">
+            <summary>
+            Adds a URI and resource context filter to the WebResourceRequested event.
+            </summary>
+            <remarks>
+            URI parameter can be a wildcard string ('': zero or more, '?': exactly one). nullptr is equivalent to L"". See CoreWebView2WebResourceContext enum for description of resource context filters.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2.RemoveWebResourceRequestedFilter(System.String,Microsoft.Web.WebView2.Core.CoreWebView2WebResourceContext)">
+            <summary>
+            Removes a matching WebResource filter that was previously added for the WebResourceRequested event.
+            </summary>
+            <remarks>
+            If the same filter was added multiple times, then it will need to be removed as many times as it was added for the removal to be effective. Returns E_INVALIDARG for a filter that was never added.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2Environment">
+            <summary>
+            This represents the WebView2 Environment.
+            </summary>
+            <remarks>
+            WebViews created from an environment run on the Browser process specified with environment parameters and objects created from an environment should be used in the same environment. Using it in different environments are not guaranteed to be compatible and may fail.
+            </remarks>
+            <summary>
+            This represents the WebView2 Environment.
+            </summary>
+            <remarks>
+            WebViews created from an environment run on the Browser process specified with environment parameters and objects created from an environment should be used in the same environment. Using it in different environments are not guaranteed to be compatible and may fail.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(System.String,System.String,Microsoft.Web.WebView2.Core.CoreWebView2EnvironmentOptions)">
+            <summary>
+            Creates an evergreen WebView2 Environment using the installed Edge version.
+            </summary>
+            <param name="browserExecutableFolder">
+            The relative path to the folder that contains the embedded Edge.
+            </param>
+            <param name="userDataFolder">
+            userDataFolder can be specified to change the default user data folder location for WebView2.
+            </param>
+            <param name="options">
+            Options used to create WebView2 Environment.
+            </param>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2Environment.BrowserVersionString">
+            <summary>
+            The browser version info of the current CoreWebView2Environment, including channel name if it is not the stable channel.
+            </summary>
+            <remarks>
+            This matches the format of the GetAvailableCoreWebView2BrowserVersionString API. Channel names are 'beta', 'dev', and 'canary'.
+            </remarks>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2Environment.NewBrowserVersionAvailable">
+            <summary>
+            The NewBrowserVersionAvailable event fires when a newer version of the Edge browser is installed and available to use via WebView2.
+            </summary>
+            <remarks>
+            To use the newer version of the browser you must create a new environment and WebView. This event will only be fired for new version from the same Edge channel that the code is running from. When not running with installed Edge, no event will be fired.
+            
+            Because a user data folder can only be used by one browser process at a time, if you want to use the same user data folder in the WebViews using the new version of the browser, you must close the environment and WebViews that are using the older version of the browser first. Or simply prompt the user to restart the app.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateCoreWebView2ControllerAsync(System.IntPtr)">
+            <summary>
+            Asynchronously create a new WebView.
+            </summary>
+            <remarks>
+            parentWindow is the HWND in which the WebView should be displayed and from which receive input. The WebView will add a child window to the provided window during WebView creation. Z-order and other things impacted by sibling window order will be affected accordingly.
+            
+            It is recommended that the application set Application User Model ID for the process or the application window. If none is set, during WebView creation a generated Application User Model ID is set to root window of parentWindow.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateWebResourceResponse(System.IO.Stream,System.Int32,System.String,System.String)">
+            <summary>
+            Create a new web resource response object.
+            </summary>
+            <remarks>
+            The headers is the raw response header string delimited by newline. It's also possible to create this object with empty headers string and then use the CoreWebView2HttpResponseHeaders to construct the headers line by line. For information on other parameters see CoreWebView2WebResourceResponse.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2EnvironmentOptions">
+            <summary>
+            Options used to create WebView2 Environment.
+            </summary>
+            <summary>
+            Options used to create WebView2 Environment.
+            </summary>
+            <remarks>
+            A default implementation is provided in WebView2EnvironmentOptions.h.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2EnvironmentOptions.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the CoreWebView2EnvironmentOptions class.
+            </summary>
+            <param name="additionalBrowserArguments">
+            AdditionalBrowserArguments can be specified to change the behavior of the WebView.
+            </param>
+            <param name="language">
+            The default language that WebView will run with.
+            </param>
+            <param name="targetCompatibleBrowserVersion">
+            The version of the Edge WebView2 Runtime binaries required to be compatible with the calling application.
+            </param>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2EnvironmentOptions.AdditionalBrowserArguments">
+            <summary>
+            AdditionalBrowserArguments can be specified to change the behavior of the WebView.
+            </summary>
+            <remarks>
+            These will be passed to the browser process as part of the command line. See [Run Chromium with Flags](https://aka.ms/RunChromiumWithFlags) for more information about command line switches to browser process. If the app is launched with a command line switch `--edge-webview-switches=xxx` the value of that switch (xxx in the above example) will also be appended to the browser process command line. Certain switches like `--user-data-dir` are internal and important to WebView. Those switches will be ignored even if specified. If the same switches are specified multiple times, the last one wins. There is no attempt to merge the different values of the same switch, except for disabled and enabled features. The features specified by `--enable-features` and `--disable-features` will be merged with simple logic: the features will be the union of the specified features and built-in features, and if a feature is disabled, it will be removed from the enabled features list. App process's command line `--edge-webview-switches` value are processed after the additionalBrowserArguments parameter is processed. Certain features are disabled internally and can't be enabled. If parsing failed for the specified switches, they will be ignored. Default is to run browser process with no extra flags.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2EnvironmentOptions.Language">
+            <summary>
+            The default language that WebView will run with.
+            </summary>
+            <remarks>
+            It applies to browser UIs like context menu and dialogs. It also applies to the accept-languages HTTP header that WebView sends to web sites. It is in the format of `language[-country]` where `language` is the 2 letter code from ISO 639 and `country` is the 2 letter code from ISO 3166.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2EnvironmentOptions.TargetCompatibleBrowserVersion">
+            <summary>
+            The version of the Edge WebView2 Runtime binaries required to be compatible with the calling application.
+            </summary>
+            <remarks>
+            This defaults to the Edge WebView2 Runtime version that corresponds with the version of the SDK the application is using. The format of this value is the same as the format of the BrowserVersionString property and other BrowserVersion values. Only the version part of the BrowserVersion value is respected. The channel suffix, if it exists, is ignored. The version of the Edge WebView2 Runtime binaries actually used may be different from the specified TargetCompatibleBrowserVersion. They are only guaranteed to be compatible. You can check the actual version on the BrowserVersionString property on the CoreWebView2Environment.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.EdgeNotFoundException">
+            <summary>
+            The exception that is thrown when an Edge installation is missing.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.EdgeNotFoundException.#ctor">
+            <summary>
+            Initializes a new instance of the EdgeNotFoundException class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.EdgeNotFoundException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the EdgeNotFoundException class with a specified error message.
+            </summary>
+            <param name="message">
+            The error message that explains the reason for the exception.
+            </param>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.EdgeNotFoundException.#ctor(System.Exception)">
+            <summary>
+            Initializes a new instance of the EdgeNotFoundException class with a reference to the inner exception that is the cause of this exception.
+            </summary>
+            <param name="inner">
+            The exception that is the cause of the current exception.
+            </param>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.EdgeNotFoundException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the EdgeNotFoundException class with a specified error message and a reference to the inner exception that is the cause of this exception.
+            </summary>
+            <param name="message">
+            The error message that explains the reason for the exception.
+            </param>
+            <param name="inner">
+            The exception that is the cause of the current exception.
+            </param>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.HostObjectHelper">
+            <summary>
+            This represents a helper object for Host Objects.
+            </summary>
+            <remarks>
+            This object helps CoreWebView2 interact with managed Host Objects correctly.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.HostObjectHelper.IsMethod(System.Object,System.String)">
+            <summary>
+            Check whether a member is a method of an object.
+            </summary>
+            <param name="obj">
+            The host object to check.
+            </param>
+            <param name="name">
+            The name of the member to check.
+            </param>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.ManagedIStream.#ctor(System.IO.Stream)">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.ManagedIStream.System#Runtime#InteropServices#ComTypes#IStream#Read(System.Byte[],System.Int32,System.IntPtr)">
+             <summary>
+             Read at most bufferSize bytes into buffer and return the effective
+             number of bytes read in bytesReadPtr (unless null).
+             </summary>
+             <remarks>
+             mscorlib disassembly shows the following MarshalAs parameters
+             void Read([Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=1)] byte[] pv, int cb, IntPtr pcbRead);
+             This means marshaling code will have found the size of the array buffer in the parameter bufferSize.
+             </remarks>
+            <SecurityNote>
+                 Critical: calls Marshal.WriteInt32 which LinkDemands, takes pointers as input
+            </SecurityNote>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.ManagedIStream.System#Runtime#InteropServices#ComTypes#IStream#Seek(System.Int64,System.Int32,System.IntPtr)">
+             <summary>
+             Move the stream pointer to the specified position.
+             </summary>
+             <remarks>
+             System.IO.stream supports searching past the end of the stream, like
+             OLE streams.
+             newPositionPtr is not an out parameter because the method is required
+             to accept NULL pointers.
+             </remarks>
+            <SecurityNote>
+                 Critical: calls Marshal.WriteInt64 which LinkDemands, takes pointers as input
+            </SecurityNote>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.ManagedIStream.System#Runtime#InteropServices#ComTypes#IStream#SetSize(System.Int64)">
+            <summary>
+            Sets stream's size.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.ManagedIStream.System#Runtime#InteropServices#ComTypes#IStream#Stat(System.Runtime.InteropServices.ComTypes.STATSTG@,System.Int32)">
+            <summary>
+            Obtain stream stats.
+            </summary>
+            <remarks>
+            STATSG has to be qualified because it is defined both in System.Runtime.InteropServices and
+            System.Runtime.InteropServices.ComTypes.
+            The STATSTG structure is shared by streams, storages and byte arrays. Members irrelevant to streams
+            or not available from System.IO.Stream are not returned, which leaves only cbSize and grfMode as 
+            meaningful and available pieces of information.
+            grfStatFlag is used to indicate whether the stream name should be returned and is ignored because
+            this information is unavailable.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.ManagedIStream.System#Runtime#InteropServices#ComTypes#IStream#Write(System.Byte[],System.Int32,System.IntPtr)">
+             <summary>
+             Write at most bufferSize bytes from buffer.
+             </summary>
+            <SecurityNote>
+                 Critical: calls Marshal.WriteInt32 which LinkDemands, takes pointers as input
+            </SecurityNote>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.ManagedIStream.System#Runtime#InteropServices#ComTypes#IStream#Clone(System.Runtime.InteropServices.ComTypes.IStream@)">
+            <summary>
+            Create a clone.
+            </summary>
+            <remarks>
+            Not implemented.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.ManagedIStream.System#Runtime#InteropServices#ComTypes#IStream#CopyTo(System.Runtime.InteropServices.ComTypes.IStream,System.Int64,System.IntPtr,System.IntPtr)">
+            <summary>
+            Read at most bufferSize bytes from the receiver and write them to targetStream.
+            </summary>
+            <remarks>
+            Not implemented.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.ManagedIStream.System#Runtime#InteropServices#ComTypes#IStream#Commit(System.Int32)">
+            <summary>
+            Commit changes.
+            </summary>
+            <remarks>
+            Only relevant to transacted streams.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.ManagedIStream.System#Runtime#InteropServices#ComTypes#IStream#LockRegion(System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Lock at most byteCount bytes starting at offset.
+            </summary>
+            <remarks>
+            Not supported by System.IO.Stream.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.ManagedIStream.System#Runtime#InteropServices#ComTypes#IStream#Revert">
+            <summary>
+            Undo writes performed since last Commit.
+            </summary>
+            <remarks>
+            Relevant only to transacted streams.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.ManagedIStream.System#Runtime#InteropServices#ComTypes#IStream#UnlockRegion(System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Unlock the specified region.
+            </summary>
+            <remarks>
+            Not supported by System.IO.Stream.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceContext">
+            <summary>
+            Enum for web resource request contexts.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceContext.All">
+            <summary>
+            All resources.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceContext.Document">
+            <summary>
+            Document resources.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceContext.Stylesheet">
+            <summary>
+            CSS resources.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceContext.Image">
+            <summary>
+            Image resources.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceContext.Media">
+            <summary>
+            Other media resources such as videos.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceContext.Font">
+            <summary>
+            Font resources.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceContext.Script">
+            <summary>
+            Script resources.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceContext.XmlHttpRequest">
+            <summary>
+            XML HTTP requests.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceContext.Fetch">
+            <summary>
+            Fetch API communication.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceContext.TextTrack">
+            <summary>
+            TextTrack resources.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceContext.EventSource">
+            <summary>
+            EventSource API communication.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceContext.Websocket">
+            <summary>
+            WebSocket API communication.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceContext.Manifest">
+            <summary>
+            Web App Manifests.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceContext.SignedExchange">
+            <summary>
+            Signed HTTP Exchanges.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceContext.Ping">
+            <summary>
+            Ping requests.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceContext.CspViolationReport">
+            <summary>
+            CSP Violation Reports.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceContext.Other">
+            <summary>
+            Other resources.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2WebErrorStatus">
+            <summary>
+            Error status values for web navigations.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebErrorStatus.Unknown">
+            <summary>
+            An unknown error occurred.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebErrorStatus.CertificateCommonNameIsIncorrect">
+            <summary>
+            The SSL certificate common name does not match the web address.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebErrorStatus.CertificateExpired">
+            <summary>
+            The SSL certificate has expired.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebErrorStatus.ClientCertificateContainsErrors">
+            <summary>
+            The SSL client certificate contains errors.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebErrorStatus.CertificateRevoked">
+            <summary>
+            The SSL certificate has been revoked.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebErrorStatus.CertificateIsInvalid">
+            <summary>
+            The SSL certificate is invalid -- this could mean the certificate did not match the public key pins for the host name, the certificate is signed by an untrusted authority or using a weak sign algorithm, the certificate claimed DNS names violate name constraints, the certificate contains a weak key, the certificate's validity period is too long, lack of revocation information or revocation mechanism, non-unique host name, lack of certificate transparency information, or the certificate is chained to a [legacy Symantec root](https://security.googleblog.com/2018/03/distrust-of-symantec-pki-immediate.html).
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebErrorStatus.ServerUnreachable">
+            <summary>
+            The host is unreachable.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebErrorStatus.Timeout">
+            <summary>
+            The connection has timed out.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebErrorStatus.ErrorHttpInvalidServerResponse">
+            <summary>
+            The server returned an invalid or unrecognized response.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebErrorStatus.ConnectionAborted">
+            <summary>
+            The connection was aborted.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebErrorStatus.ConnectionReset">
+            <summary>
+            The connection was reset.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebErrorStatus.Disconnected">
+            <summary>
+            The Internet connection has been lost.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebErrorStatus.CannotConnect">
+            <summary>
+            Cannot connect to destination.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebErrorStatus.HostNameNotResolved">
+            <summary>
+            Could not resolve provided host name.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebErrorStatus.OperationCanceled">
+            <summary>
+            The operation was canceled.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebErrorStatus.RedirectFailed">
+            <summary>
+            The request redirect failed.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2WebErrorStatus.UnexpectedError">
+            <summary>
+            An unexpected error occurred.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2ScriptDialogKind">
+            <summary>
+            Kind of JavaScript dialog used in the CoreWebView2ScriptDialogOpeningEventHandler class.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2ScriptDialogKind.Alert">
+            <summary>
+            A dialog invoked via the window.alert JavaScript function.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2ScriptDialogKind.Confirm">
+            <summary>
+            A dialog invoked via the window.confirm JavaScript function.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2ScriptDialogKind.Prompt">
+            <summary>
+            A dialog invoked via the window.prompt JavaScript function.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2ScriptDialogKind.Beforeunload">
+            <summary>
+            A dialog invoked via the window.beforeunload JavaScript function.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2ProcessFailedKind">
+            <summary>
+            Kind of process failure used in the CoreWebView2ProcessFailedEventHandler class.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2ProcessFailedKind.BrowserProcessExited">
+            <summary>
+            Indicated the browser process terminated unexpectedly.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2ProcessFailedKind.RenderProcessExited">
+            <summary>
+            Indicated the render process terminated unexpectedly.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2ProcessFailedKind.RenderProcessUnresponsive">
+            <summary>
+            Indicated the render process becomes unresponsive.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2PermissionState">
+            <summary>
+            Response to a permission request.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2PermissionState.Default">
+            <summary>
+            Use default browser behavior, which normally prompt users for decision.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2PermissionState.Allow">
+            <summary>
+            Grant the permission request.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2PermissionState.Deny">
+            <summary>
+            Deny the permission request.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2PermissionKind">
+            <summary>
+            The type of a permission request.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2PermissionKind.UnknownPermission">
+            <summary>
+            Unknown permission.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2PermissionKind.Microphone">
+            <summary>
+            Permission to capture audio.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2PermissionKind.Camera">
+            <summary>
+            Permission to capture video.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2PermissionKind.Geolocation">
+            <summary>
+            Permission to access geolocation.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2PermissionKind.Notifications">
+            <summary>
+            Permission to send web notifications.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2PermissionKind.OtherSensors">
+            <summary>
+            Permission to access generic sensor.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2PermissionKind.ClipboardRead">
+            <summary>
+            Permission to read system clipboard without a user gesture.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2MoveFocusReason">
+            <summary>
+            Reason for moving focus.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2MoveFocusReason.Programmatic">
+            <summary>
+            Code setting focus into WebView.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2MoveFocusReason.Next">
+            <summary>
+            Moving focus due to Tab traversal forward.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2MoveFocusReason.Previous">
+            <summary>
+            Moving focus due to Tab traversal backward.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2KeyEventKind">
+            <summary>
+            The type of key event that triggered an AcceleratorKeyPressed event.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2KeyEventKind.KeyDown">
+            <summary>
+            Correspond to window message WM_KEYDOWN.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2KeyEventKind.KeyUp">
+            <summary>
+            Correspond to window message WM_KEYUP.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2KeyEventKind.SystemKeyDown">
+            <summary>
+            Correspond to window message WM_SYSKEYDOWN.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2KeyEventKind.SystemKeyUp">
+            <summary>
+            Correspond to window message WM_SYSKEYUP.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2CapturePreviewImageFormat">
+            <summary>
+            Image format used by the CoreWebView2CapturePreview method.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2CapturePreviewImageFormat.Png">
+            <summary>
+            PNG image format.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2CapturePreviewImageFormat.Jpeg">
+            <summary>
+            JPEG image format.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2PhysicalKeyStatus">
+            <summary>
+            A structure representing the information packed into the LPARAM given to a Win32 key event.
+            </summary>
+            <remarks>
+            See the documentation for WM_KEYDOWN for details at https://docs.microsoft.com/windows/win32/inputdev/wm-keydown.
+            </remarks>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2PhysicalKeyStatus.RepeatCount">
+            <summary>
+            The repeat count for the current message.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2PhysicalKeyStatus.ScanCode">
+            <summary>
+            The scan code.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2PhysicalKeyStatus.IsExtendedKey">
+            <summary>
+            Indicates whether the key is an extended key.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2PhysicalKeyStatus.IsMenuKeyDown">
+            <summary>
+            The context code.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2PhysicalKeyStatus.WasKeyDown">
+            <summary>
+            The previous key state.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Web.WebView2.Core.CoreWebView2PhysicalKeyStatus.IsKeyReleased">
+            <summary>
+            The transition state.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceRequestedEventArgs">
+            <summary>
+            Event args for the WebResourceRequested event.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceRequestedEventArgs.Request">
+            <summary>
+            The HTTP request.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceRequestedEventArgs.Response">
+            <summary>
+            The HTTP response.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceRequestedEventArgs.ResourceContext">
+            <summary>
+            The web resource request contexts.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2WebResourceRequestedEventArgs.GetDeferral">
+            <summary>
+            Obtain a CoreWebView2Deferral object and put the event into a deferred state.
+            </summary>
+            <remarks>
+            You can use the CoreWebView2Deferral object to complete the network request at a later time.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2WebMessageReceivedEventArgs">
+            <summary>
+            Event args for the WebMessageReceived event.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2WebMessageReceivedEventArgs.Source">
+            <summary>
+            The URI of the document that sent this web message.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2WebMessageReceivedEventArgs.WebMessageAsJson">
+            
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2WebMessageReceivedEventArgs.TryGetWebMessageAsString">
+            <summary>
+            If the message posted from the webview content to the host is a string type, this method will return the value of that string.
+            </summary>
+            <remarks>
+            If the message posted is some other kind of JavaScript type this method will fail with E_INVALIDARG. Use this to communicate via simple strings.
+            
+            For example the following postMessage calls result in the following WebMessageAsString values:
+            
+            <code>
+            postMessage({'a': 'b'})      E_INVALIDARG
+            postMessage(1.2)             E_INVALIDARG
+            postMessage('example')       L"example"
+            </code>
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2SourceChangedEventArgs">
+            <summary>
+            Event args for the SourceChanged event.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2SourceChangedEventArgs.IsNewDocument">
+            <summary>
+            True if the page being navigated to is a new document.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2Settings">
+            <summary>
+            Defines properties that enable, disable, or modify WebView features.
+            </summary>
+            <remarks>
+            Setting changes made after NavigationStarting event will not apply until the next top level navigation.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2Settings.IsScriptEnabled">
+            <summary>
+            Controls if JavaScript execution is enabled in all future navigations in the WebView.
+            </summary>
+            <remarks>
+            This only affects scripts in the document; scripts injected with ExecuteScript will run even if script is disabled. It is true by default.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2Settings.IsWebMessageEnabled">
+            <summary>
+            The IsWebMessageEnabled property is used when loading a new HTML document.
+            </summary>
+            <remarks>
+            If set to true, communication from the host to the webview's top level HTML document is allowed via PostWebMessageAsJson, PostWebMessageAsString, and window.chrome.webview's message event (see PostWebMessageAsJson documentation for details). Communication from the webview's top level HTML document to the host is allowed via window.chrome.webview's postMessage function and the SetWebMessageReceivedEventHandler method (see the SetWebMessageReceivedEventHandler documentation for details). If set to false, then communication is disallowed. PostWebMessageAsJson and PostWebMessageAsString will fail with E_ACCESSDENIED and window.chrome.webview.postMessage will fail by throwing an instance of an Error object. It is true by default.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2Settings.AreDefaultScriptDialogsEnabled">
+            <summary>
+            AreDefaultScriptDialogsEnabled is used when loading a new HTML document.
+            </summary>
+            <remarks>
+            If set to false, then WebView won't render the default javascript dialog box (Specifically those shown by the javascript alert, confirm, prompt functions and beforeunload event). Instead, if an event handler is set by SetScriptDialogOpeningEventHandler, WebView will send an event that will contain all of the information for the dialog and allow the host app to show its own custom UI.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2Settings.IsStatusBarEnabled">
+            <summary>
+            IsStatusBarEnabled controls whether the status bar will be displayed.
+            </summary>
+            <remarks>
+            The status bar is usually displayed in the lower left of the WebView and shows things such as the URI of a link when the user hovers over it and other information. It is true by default.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2Settings.AreDevToolsEnabled">
+            <summary>
+            AreDevToolsEnabled controls whether the user is able to use the context menu or keyboard shortcuts to open the DevTools window.
+            </summary>
+            <remarks>
+            It is true by default.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2Settings.AreDefaultContextMenusEnabled">
+            <summary>
+            The AreDefaultContextMenusEnabled property is used to prevent default context menus from being shown to user in webview.
+            </summary>
+            <remarks>
+            Defaults to TRUE.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2Settings.AreRemoteObjectsAllowed">
+            <summary>
+            The AreRemoteObjectsAllowed property is used to control whether remote objects are accessible from the page in webview.
+            </summary>
+            <remarks>
+            Defaults to TRUE.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2Settings.IsZoomControlEnabled">
+            <summary>
+            The IsZoomControlEnabled property is used to prevent the user from impacting the zoom of the WebView.
+            </summary>
+            <remarks>
+            Defaults to TRUE. When disabled, user will not be able to zoom using ctrl+/- or ctrl+mouse wheel, but the zoom can be set via ZoomFactor API.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2Settings.IsBuiltInErrorPageEnabled">
+            <summary>
+            The IsBuiltInErrorPageEnabled property is used to disable built in error page for navigation failure and render process failure.
+            </summary>
+            <remarks>
+            Defaults to TRUE. When disabled, blank page will be shown when related error happens.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2ScriptDialogOpeningEventArgs">
+            <summary>
+            Event args for the ScriptDialogOpening event.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2ScriptDialogOpeningEventArgs.Uri">
+            
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2ScriptDialogOpeningEventArgs.Kind">
+            <summary>
+            The kind of JavaScript dialog box.
+            </summary>
+            <remarks>
+            Accept, confirm, prompt, or beforeunload.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2ScriptDialogOpeningEventArgs.Message">
+            <summary>
+            The message of the dialog box.
+            </summary>
+            <remarks>
+            From JavaScript this is the first parameter passed to alert, confirm, and prompt and is empty for beforeunload.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2ScriptDialogOpeningEventArgs.DefaultText">
+            <summary>
+            The second parameter passed to the JavaScript prompt dialog.
+            </summary>
+            <remarks>
+            This is the default value to use for the result of the prompt JavaScript function.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2ScriptDialogOpeningEventArgs.ResultText">
+            <summary>
+            The return value from the JavaScript prompt function if Accept is called.
+            </summary>
+            <remarks>
+            This is ignored for dialog kinds other than prompt. If Accept is not called this value is ignored and false is returned from prompt.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2ScriptDialogOpeningEventArgs.Accept">
+            <summary>
+            The host may call this to respond with OK to confirm, prompt, and beforeunload dialogs or not call this method to indicate cancel.
+            </summary>
+            <remarks>
+            From JavaScript, this means that the confirm and beforeunload function returns true if Accept is called. And for the prompt function it returns the value of ResultText if Accept is called and returns false otherwise.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2ScriptDialogOpeningEventArgs.GetDeferral">
+            <summary>
+            GetDeferral can be called to return a CoreWebView2Deferral object.
+            </summary>
+            <remarks>
+            You can use this to complete the event at a later time.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2ProcessFailedEventArgs">
+            <summary>
+            Event args for the ProcessFailed event.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2ProcessFailedEventArgs.ProcessFailedKind">
+            <summary>
+            The kind of process failure that has occurred.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2PermissionRequestedEventArgs">
+            <summary>
+            Event args for the PermissionRequested event.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2PermissionRequestedEventArgs.Uri">
+            
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2PermissionRequestedEventArgs.PermissionKind">
+            <summary>
+            The type of the permission that is requested.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2PermissionRequestedEventArgs.IsUserInitiated">
+            <summary>
+            True when the permission request was initiated through a user gesture.
+            </summary>
+            <remarks>
+            Note that being initiated through a user gesture doesn't mean that user intended to access the associated resource.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2PermissionRequestedEventArgs.State">
+            <summary>
+            The status of a permission request, i.e. whether the request is granted.
+            </summary>
+            <remarks>
+            Default value is CoreWebView2PermissionState.Default.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2PermissionRequestedEventArgs.GetDeferral">
+            <summary>
+            GetDeferral can be called to return a CoreWebView2Deferral object.
+            </summary>
+            <remarks>
+            Developer can use the deferral object to make the permission decision at a later time.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2NewWindowRequestedEventArgs">
+            <summary>
+            Event args for the NewWindowRequested event.
+            </summary>
+            <remarks>
+            The event is fired when content inside webview requested to a open a new window (through window.open() and so on.)
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2NewWindowRequestedEventArgs.Uri">
+            
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2NewWindowRequestedEventArgs.NewWindow">
+            <summary>
+            Gets the new window.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2NewWindowRequestedEventArgs.Handled">
+            <summary>
+            Whether the NewWindowRequestedEvent is handled by host.
+            </summary>
+            <remarks>
+            If this is false and no NewWindow is set, the WebView will open a popup window and it will be returned as opened WindowProxy. If set to true and no NewWindow is set for a window.open call, the opened WindowProxy will be for an dummy window object and no window will load. Default is false.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2NewWindowRequestedEventArgs.IsUserInitiated">
+            <summary>
+            IsUserInitiated is true when the new window request was initiated through a user gesture such as clicking an anchor tag with target.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2NewWindowRequestedEventArgs.GetDeferral">
+            <summary>
+            Obtain a CoreWebView2Deferral object and put the event into a deferred state.
+            </summary>
+            <remarks>
+            You can use the CoreWebView2Deferral object to complete the window open request at a later time. While this event is deferred the opener window will be returned a WindowProxy to an unnavigated window, which will navigate when the deferral is complete.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs">
+            <summary>
+            Event args for the NavigationStarting event.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs.Uri">
+            
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs.IsUserInitiated">
+            <summary>
+            True when the navigation was initiated through a user gesture as opposed to programmatic navigation.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs.IsRedirected">
+            <summary>
+            True when the navigation is redirected.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs.RequestHeaders">
+            <summary>
+            The HTTP request headers for the navigation.
+            </summary>
+            <remarks>
+            Note, you cannot modify the HTTP request headers in a NavigationStarting event.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs.Cancel">
+            <summary>
+            The host may set this flag to cancel the navigation.
+            </summary>
+            <remarks>
+            If set, it will be as if the navigation never happened and the current page's content will be intact. For performance reasons, GET HTTP requests may happen, while the host is responding. This means cookies can be set and used part of a request for the navigation.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs.NavigationId">
+            <summary>
+            The ID of the navigation.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs">
+            <summary>
+            Event args for the NavigationCompleted event.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs.IsSuccess">
+            <summary>
+            True when the navigation is successful.
+            </summary>
+            <remarks>
+            This is false for a navigation that ended up in an error page (failures due to no network, DNS lookup failure, HTTP server responds with 4xx), but could also be false for additional things such as window.stop() called on navigated page.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs.WebErrorStatus">
+            <summary>
+            The error code if the navigation failed.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs.NavigationId">
+            <summary>
+            The ID of the navigation.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2MoveFocusRequestedEventArgs">
+            <summary>
+            Event args for the MoveFocusRequested event.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2MoveFocusRequestedEventArgs.Reason">
+            
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2MoveFocusRequestedEventArgs.Handled">
+            <summary>
+            Indicate whether the event has been handled by the app.
+            </summary>
+            <remarks>
+            If the app has moved the focus to its desired location, it should set Handled property to TRUE. When Handled property is false after the event handler returns, default action will be taken. The default action is to try to find the next tab stop child window in the app and try to move focus to that window. If there is no other such window to move focus to, focus will be cycled within the WebView's web content.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2DevToolsProtocolEventReceiver">
+            <summary>
+            A Receiver is created for a particular DevTools Protocol event and allows you to subscribe and unsubscribe from that event.
+            </summary>
+            <remarks>
+            Obtained from the WebView object via GetDevToolsProtocolEventReceiver.
+            </remarks>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2DevToolsProtocolEventReceiver.DevToolsProtocolEventReceived">
+            <summary>
+            Subscribe to a DevToolsProtocol event.
+            </summary>
+            <remarks>
+            The handler's Invoke method will be called whenever the corresponding DevToolsProtocol event fires. Invoke will be called with the an event args object containing the DevTools Protocol event's parameter object as a JSON string.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2DevToolsProtocolEventReceivedEventArgs">
+            <summary>
+            Event args for the DevToolsProtocolEventReceived event.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2DevToolsProtocolEventReceivedEventArgs.ParameterObjectAsJson">
+            <summary>
+            The parameter object of the corresponding DevToolsProtocol event represented as a JSON string.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2Deferral">
+            <summary>
+            This class is used to complete deferrals on event args that support getting deferrals via their GetDeferral method.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2Deferral.Complete">
+            <summary>
+            Completes the associated deferred event.
+            </summary>
+            <remarks>
+            Complete should only be called once for each deferral taken.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2Controller">
+            <summary>
+            This class is the owner of the CoreWebView2 object, and provides support for resizing, showing and hiding, focusing, and other functionality related to windowing and composition.
+            </summary>
+            <remarks>
+            The CoreWebView2Controller owns the CoreWebView2, and if all references to the CoreWebView2Controller go away, the WebView will be closed.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2Controller.IsVisible">
+            <summary>
+            The IsVisible property determines whether to show or hide the webview.
+            </summary>
+            <remarks>
+            If IsVisible is set to false, the webview will be transparent and will not be rendered. However, this will not affect the window containing the webview (the HWND parameter that was passed to CreateCoreWebView2Controller). If you want that window to disappear too, call ShowWindow on it directly in addition to modifying the IsVisible property. WebView as a child window won't get window messages when the top window is minimized or restored. For performance reason, developer should set IsVisible property of the WebView to false when the app window is minimized and back to true when app window is restored. App window can do this by handling SC_MINIMIZE and SC_RESTORE command upon receiving WM_SYSCOMMAND message.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2Controller.Bounds">
+            <summary>
+            The webview bounds.
+            </summary>
+            <remarks>
+            Bounds are relative to the parent HWND. The app has two ways it can position a WebView:
+            
+            1. Create a child HWND that is the WebView parent HWND. Position this window where the WebView should be. In this case, use (0, 0) for the WebView's Bound's top left corner (the offset).
+            
+            2. Use the app's top most window as the WebView parent HWND. Set the WebView's Bound's top left corner so that the WebView is positioned correctly in the app. The Bound's values are in the host's coordinate space.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2Controller.ZoomFactor">
+            <summary>
+            The zoom factor for the WebView.
+            </summary>
+            <remarks>
+            Note that changing zoom factor could cause `window.innerWidth/innerHeight` and page layout to change. A zoom factor that is applied by the host by calling ZoomFactor becomes the new default zoom for the WebView. This zoom factor applies across navigations and is the zoom factor WebView is returned to when the user presses ctrl+0. When the zoom factor is changed by the user (resulting in the app receiving ZoomFactorChanged), that zoom applies only for the current page. Any user applied zoom is only for the current page and is reset on a navigation. Specifying a zoomFactor less than or equal to 0 is not allowed. WebView also has an internal supported zoom factor range. When a specified zoom factor is out of that range, it will be normalized to be within the range, and a ZoomFactorChanged event will be fired for the real applied zoom factor. When this range normalization happens, the ZoomFactor property will report the zoom factor specified during the previous modification of the ZoomFactor property until the ZoomFactorChanged event is received after webview applies the normalized zoom factor.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2Controller.ParentWindow">
+            <summary>
+            The parent window provided by the app that this WebView is using to render content.
+            </summary>
+            <remarks>
+            Setting the property will cause the WebView to reparent its window to the newly provided window.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2Controller.CoreWebView2">
+            <summary>
+            Gets the CoreWebView2 associated with this CoreWebView2Controller.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2Controller.ZoomFactorChanged">
+            <summary>
+            The event fires when the ZoomFactor property of the WebView changes.
+            </summary>
+            <remarks>
+            The event could fire because the caller modified the ZoomFactor property, or due to the user manually modifying the zoom. When it is modified by the caller via the ZoomFactor property, the internal zoom factor is updated immediately and there will be no ZoomFactorChanged event. WebView associates the last used zoom factor for each site. Therefore, it is possible for the zoom factor to change when navigating to a different page. When the zoom factor changes due to this, the ZoomFactorChanged event fires right after the ContentLoading event.
+            </remarks>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2Controller.MoveFocusRequested">
+            <summary>
+            MoveFocusRequested fires when user tries to tab out of the WebView.
+            </summary>
+            <remarks>
+            The WebView's focus has not changed when this event is fired.
+            </remarks>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2Controller.GotFocus">
+            <summary>
+            GotFocus fires when WebView got focus.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2Controller.LostFocus">
+            <summary>
+            LostFocus fires when WebView lost focus.
+            </summary>
+            <remarks>
+            In the case where MoveFocusRequested event is fired, the focus is still on WebView when MoveFocusRequested event fires. Lost focus only fires afterwards when app's code or default action of MoveFocusRequested event set focus away from WebView.
+            </remarks>
+        </member>
+        <member name="E:Microsoft.Web.WebView2.Core.CoreWebView2Controller.AcceleratorKeyPressed">
+            <summary>
+            AcceleratorKeyPressed fires when an accelerator key or key combo is pressed or released while the WebView is focused.
+            </summary>
+            <remarks>
+            AcceleratorKeyPressed fires when an accelerator key or key combo is pressed or released while the WebView is focused. A key is considered an accelerator if either:
+            
+            1. Ctrl or Alt is currently being held, or
+            
+            2. the pressed key does not map to a character. A few specific keys are never considered accelerators, such as Shift. The Escape key is always considered an accelerator.
+            
+            Autorepeated key events caused by holding the key down will also fire this event. You can filter these out by checking the event args' KeyEventLParam or PhysicalKeyStatus.
+            
+            In windowed mode, this event handler is called synchronously. Until you call Handle() on the event args or the event handler returns, the browser process will be blocked and outgoing cross-process COM calls will fail with RPC_E_CANTCALLOUT_ININPUTSYNCCALL. All CoreWebView2 API methods will work, however.
+            
+            In windowless mode, the event handler is called asynchronously. Further input will not reach the browser until the event handler returns or Handle() is called, but the browser process itself will not be blocked, and outgoing COM calls will work normally.
+            
+            It is recommended to call Handle(TRUE) as early as you can know that you want to handle the accelerator key.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2Controller.SetBoundsAndZoomFactor(System.Windows.Rect,System.Double)">
+            <summary>
+            Update Bounds and ZoomFactor properties at the same time.
+            </summary>
+            <remarks>
+            This operation is atomic from the host's perspective. After returning from this function, the Bounds and ZoomFactor properties will have both been updated if the function is successful, or neither will be updated if the function fails. If Bounds and ZoomFactor are both updated by the same scale (i.e. Bounds and ZoomFactor are both doubled), then the page will not see a change in window.innerWidth/innerHeight and the WebView will render the content at the new size and zoom without intermediate renderings. This function can also be used to update just one of ZoomFactor or Bounds by passing in the new value for one and the current value for the other.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2Controller.MoveFocus(Microsoft.Web.WebView2.Core.CoreWebView2MoveFocusReason)">
+            <summary>
+            Move focus into WebView.
+            </summary>
+            <remarks>
+            WebView will get focus and focus will be set to correspondent element in the page hosted in the WebView. For Programmatic reason, focus is set to previously focused element or the default element if there is no previously focused element. For Next reason, focus is set to the first element. For Previous reason, focus is set to the last element. WebView can also got focus through user interaction like clicking into WebView or Tab into it. For tabbing, the app can call MoveFocus with Next or Previous to align with tab and shift+tab respectively when it decides the WebView is the next tabbable element. Or, the app can call IsDialogMessage as part of its message loop to allow the platform to auto handle tabbing. The platform will rotate through all windows with WS_TABSTOP. When the WebView gets focus from IsDialogMessage, it will internally put the focus on the first or last element for tab and shift+tab respectively.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2Controller.NotifyParentWindowPositionChanged">
+            <summary>
+            This is a notification separate from Bounds that tells WebView its parent (or any ancestor) HWND moved.
+            </summary>
+            <remarks>
+            This is needed for accessibility and certain dialogs in WebView to work correctly.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Web.WebView2.Core.CoreWebView2Controller.Close">
+            <summary>
+            Closes the WebView and cleans up the underlying browser instance.
+            </summary>
+            <remarks>
+            Cleaning up the browser instance will release the resources powering the WebView. The browser instance will be shut down if there are no other WebViews using it.
+            
+            After calling Close, all method calls will fail and event handlers will stop firing. Specifically, the WebView will release its references to its event handlers when Close is called.
+            
+            Close is implicitly called when the CoreWebView2Controller loses its final reference and is destructed. But it is best practice to explicitly call Close to avoid any accidental cycle of references between the WebView and the app code. Specifically, if you capture a reference to the WebView in an event handler you will create a reference cycle between the WebView and the event handler. Calling Close will break this cycle by releasing all event handlers. But to avoid this situation it is best practice both to explicitly call Close on the WebView and to not capture a reference to the WebView to ensure the WebView can be cleaned up correctly.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2ContentLoadingEventArgs">
+            <summary>
+            Event args for the ContentLoading event.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2ContentLoadingEventArgs.IsErrorPage">
+            <summary>
+            True if the loaded content is an error page.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2ContentLoadingEventArgs.NavigationId">
+            <summary>
+            The ID of the navigation.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Web.WebView2.Core.CoreWebView2AcceleratorKeyPressedEventArgs">
+            <summary>
+            Event args for the AcceleratorKeyPressed event.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2AcceleratorKeyPressedEventArgs.KeyEventKind">
+            <summary>
+            The key event type that caused the event to be fired.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2AcceleratorKeyPressedEventArgs.VirtualKey">
+            <summary>
+            The Win32 virtual key code of the key that was pressed or released.
+            </summary>
+            <remarks>
+            This will be one of the Win32 virtual key constants such as VK_RETURN or an (uppercase) ASCII value such as 'A'. You can check whether Ctrl or Alt are pressed by calling GetKeyState(VK_CONTROL) or GetKeyState(VK_MENU).
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2AcceleratorKeyPressedEventArgs.KeyEventLParam">
+            <summary>
+            The LPARAM value that accompanied the window message.
+            </summary>
+            <remarks>
+            See the documentation for the WM_KEYDOWN and WM_KEYUP messages.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2AcceleratorKeyPressedEventArgs.PhysicalKeyStatus">
+            <summary>
+            A structure representing the information passed in the LPARAM of the window message.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Web.WebView2.Core.CoreWebView2AcceleratorKeyPressedEventArgs.Handled">
+            <summary>
+            During AcceleratorKeyPressedEvent handler invocation the WebView is blocked waiting for the decision of if the accelerator will be handled by the host or not.
+            </summary>
+            <remarks>
+            If the Handled property is set to TRUE then this will prevent the WebView from performing the default action for this accelerator key. Otherwise the WebView will perform the default action for the accelerator key.
+            </remarks>
+        </member>
+    </members>
+</doc>

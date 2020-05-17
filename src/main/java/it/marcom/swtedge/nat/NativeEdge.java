@@ -1,7 +1,25 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * MIT License
+ * <p>
+ * Copyright (c) 2020 Marco Monacelli
+ * <p>
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * <p>
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * <p>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 package it.marcom.swtedge.nat;
 
@@ -22,7 +40,7 @@ import java.util.Random;
  * @author MarcoM
  */
 public class NativeEdge {
-
+    String currentNavigationData;
     private static final String WEBVIEW_TMPLIB_PREFIX = "webview";
     private static Random rnd = new Random();
 
@@ -48,6 +66,7 @@ public class NativeEdge {
 
     private long edgePointer;
 
+
     public NativeEdge() {
         this(0);
     }
@@ -59,6 +78,7 @@ public class NativeEdge {
 
     public void bind(String name, WebViewNativeCallback fn) {
         bind(edgePointer, name, fn, edgePointer);
+        navigate(currentNavigationData);
     }
 
     public void setBounds(int x, int y, int width, int height, int flags) {
@@ -70,15 +90,29 @@ public class NativeEdge {
         eval(edgePointer, js, callBack);
     }
 
+    public void initScript(String js) {
+        init(edgePointer, js);
+    }
+
+    public void reload(){
+        navigate(currentNavigationData);
+    }
+
     public void navigate(String url) {
+        currentNavigationData=url;
         navigate(edgePointer, url);
+    }
+
+    @Override
+    public void finalize() throws Throwable {
+        destroy(edgePointer);
+        super.finalize();
     }
 
     private native static long create(int debug, long window);
 
 
     private native static void destroy(long w);
-
 
     private native static void run(long w);
 
@@ -282,5 +316,7 @@ public class NativeEdge {
         }
         return jnatmp;
     }
+
+
 
 }

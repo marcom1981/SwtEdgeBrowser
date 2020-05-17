@@ -63,35 +63,15 @@ public class EdgeBrowser extends WebBrowserView {
     @Override
     public void create(Composite composite, int i) {
         this.parent = composite;
-
-
-        boolean oauth;
-
-        String onLoad;
-        boolean useMessageBoundaries = false;
-
-
         edge = new NativeEdge(parent.handle);
-        WebViewNativeCallback fn = new WebViewNativeCallback() {
-            @Override
-            public String invoke(String s, long l) {
-                //WebViewNative.webview_eval(peer,"alert(\"provata\")",null);
-                return "\"provata\"";
-            }
-        };
-        edge.bind("prova", fn);
         edge.setBounds(0, 0, parent.getSize().x, parent.getSize().y, 0);
-
         parent.addListener(SWT.Resize, new Listener() {
             @Override
             public void handleEvent(org.eclipse.swt.widgets.Event event) {
                 edge.setBounds(0, 0, parent.getSize().x, parent.getSize().y, 0);
             }
         });
-
         initMsgHook(browser.getDisplay());
-
-
     }
 
     private static void initMsgHook(Display display) {
@@ -126,10 +106,14 @@ public class EdgeBrowser extends WebBrowserView {
         EvaluateFuture future = new EvaluateFuture();
         edge.eval(script, future);
         try {
-            boolean trovato = false;
             while (true) {
                 try {
-                    return future.getFuture().get(1, TimeUnit.MILLISECONDS);
+                    String value = future.getFuture().get(1, TimeUnit.MILLISECONDS);
+                    if(value!=null) {
+                        return JsUtils.jsonToObject(value);
+                    }else{
+                        return null;
+                    }
                 } catch (TimeoutException e) {
                     browser.getDisplay().readAndDispatch();
                 }
@@ -141,6 +125,11 @@ public class EdgeBrowser extends WebBrowserView {
         }
 
         return null;
+    }
+
+
+    public NativeEdge getEdge(){
+        return edge;
     }
 
     @Override
@@ -168,16 +157,6 @@ public class EdgeBrowser extends WebBrowserView {
 //        }
 
         return true;
-//        EvaluateFuture future = new EvaluateFuture();
-//        WebViewNative.webview_eval(peer, script, new EvaluationCallBack() {
-//            @Override
-//            public void invoke(int i, String s) {
-//                System.out.println("Status " + i);
-//                System.out.println("Value " + s);
-//            }
-//        });
-//        browser.getDisplay().readAndDispatch();
-//        return true;
     }
 
     @Override

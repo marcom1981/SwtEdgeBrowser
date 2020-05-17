@@ -1,4 +1,3 @@
-package it.marcom.swtedge;
 /**
  * MIT License
  *
@@ -22,6 +21,7 @@ package it.marcom.swtedge;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package it.marcom.swtedge;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -217,10 +217,7 @@ abstract class WebBrowserView {
     }
 
     public void addAuthenticationListener (AuthenticationListener listener) {
-        AuthenticationListener[] newAuthenticationListeners = new AuthenticationListener[authenticationListeners.length + 1];
-        System.arraycopy(authenticationListeners, 0, newAuthenticationListeners, 0, authenticationListeners.length);
-        authenticationListeners = newAuthenticationListeners;
-        authenticationListeners[authenticationListeners.length - 1] = listener;
+        throw new UnsupportedOperationException();
     }
 
     public void addCloseWindowListener (CloseWindowListener listener) {
@@ -329,152 +326,22 @@ abstract class WebBrowserView {
         return true;
     }
 
-    public void createFunction (BrowserViewFunction function) {
 
-        /*
-         * If an existing function with the same name is found then
-         * remove it so that it is not recreated on subsequent pages
-         * (the new function overwrites the old one).
-         */
-        Iterator<Integer> keys = functions.keySet().iterator ();
-        while (keys.hasNext ()) {
-            Integer key = keys.next ();
-            BrowserViewFunction current = functions.get (key);
-            if (current.name.equals (function.name)) {
-                deregisterFunction(current);
-                break;
-            }
-        }
 
-        function.index = getNextFunctionIndex ();
-        registerFunction (function);
 
-        StringBuffer functionBuffer = new StringBuffer (function.name);
-        functionBuffer.append (" = function "); //$NON-NLS-1$
-        functionBuffer.append (function.name);
-        functionBuffer.append ("() {var result = callJava("); //$NON-NLS-1$
-        functionBuffer.append (function.index);
-        functionBuffer.append (",'"); //$NON-NLS-1$
-        functionBuffer.append (function.token);
-        functionBuffer.append ("',Array.prototype.slice.call(arguments)); if (typeof result == 'string' && result.indexOf('"); //$NON-NLS-1$
-        functionBuffer.append (ERROR_ID);
-        functionBuffer.append ("') == 0) {var error = new Error(result.substring("); //$NON-NLS-1$
-        functionBuffer.append (ERROR_ID.length ());
-        functionBuffer.append (")); throw error;} return result;};"); //$NON-NLS-1$
 
-        String javaCallDeclaration = getJavaCallDeclaration();
 
-        StringBuffer buffer = new StringBuffer (); //$NON-NLS-1$
-        buffer.append (javaCallDeclaration); //$NON-NLS-1$
-        if (function.top) {
-            buffer.append (functionBuffer.toString ());
-        }
 
-        buffer.append ("var frameIds = null;"); //$NON-NLS-1$
-        if (function.frameNames != null) {
-            buffer.append ("frameIds = {"); //$NON-NLS-1$
-            for (int i = 0; i < function.frameNames.length; i++) {
-                buffer.append ('\'');
-                buffer.append (function.frameNames[i]);
-                buffer.append ("':1,"); //$NON-NLS-1$
-            }
-            if (function.frameNames.length > 0) {
-                buffer.deleteCharAt(buffer.length () - 1);
-            }
-            buffer.append ("};"); //$NON-NLS-1$
-        }
-
-        buffer.append ("for (var i = 0; i < frames.length; i++) {try {if (!frameIds || (frames[i].name && frameIds[frames[i].name])) {"); //$NON-NLS-1$
-        buffer.append ("if (!frames[i].callJava) {frames[i].callJava = window.callJava;} frames[i]."); //$NON-NLS-1$
-        buffer.append (functionBuffer.toString ());
-        buffer.append ("}} catch(e) {}};"); //$NON-NLS-1$
-
-        function.functionString = buffer.toString ();
-        execute(function.functionString);
-    }
-
-    /**
-     * Designed to be overriden.
-     * @return javaScrit code that defines the 'callJava' syntax for javascript.
-     */
-    String getJavaCallDeclaration() {
-        return    "if (!window.callJava) {\n"
-                + "		window.callJava = function callJava(index, token, args) {\n"
-                + "			return external.callJava(index,token,args);\n"
-                + "		}\n"
-                + "};\n";
-    }
-
-    void deregisterFunction (BrowserViewFunction function) {
-        functions.remove (function.index);
-    }
-
-    public void destroyFunction (BrowserViewFunction function) {
-        String deleteString = getDeleteFunctionString (function.name);
-        StringBuffer buffer = new StringBuffer ("for (var i = 0; i < frames.length; i++) {try {frames[i].eval(\""); //$NON-NLS-1$
-        buffer.append (deleteString);
-        buffer.append ("\");} catch (e) {}}"); //$NON-NLS-1$
-        execute (buffer.toString ());
-        execute (deleteString);
-        deregisterFunction (function);
-    }
 
     public abstract boolean execute (String script);
+
+    public abstract Object evaluate(String script) ;
 
     public Object evaluate (String script, boolean trusted) throws SWTException {
         return evaluate(script);
     }
 
-    public Object evaluate (String script) throws SWTException {
-        // Developer note:
-        // Webkit1 & Mozilla use this mechanism.
-        // Webkit2 uses a different mechanism. See WebKit:evaluate();
-        BrowserViewFunction function = new BrowserViewFunction (browser, ""); // $NON-NLS-1$
-        int index = getNextFunctionIndex ();
-        function.index = index;
-        function.isEvaluate = true;
-        registerFunction (function);
-        String functionName = EXECUTE_ID + index;
 
-        StringBuffer buffer = new StringBuffer ("window."); // $NON-NLS-1$
-        buffer.append (functionName);
-        buffer.append (" = function "); // $NON-NLS-1$
-        buffer.append (functionName);
-        buffer.append ("() {\n"); // $NON-NLS-1$
-        buffer.append (script);
-        buffer.append ("\n};"); // $NON-NLS-1$
-        execute (buffer.toString ());
-
-        buffer = new StringBuffer ("if (window."); // $NON-NLS-1$
-        buffer.append (functionName);
-        buffer.append (" == undefined) {window.external.callJava("); // $NON-NLS-1$
-        buffer.append (index);
-        buffer.append (",'"); //$NON-NLS-1$
-        buffer.append (function.token);
-        buffer.append ("', ['"); // $NON-NLS-1$
-        buffer.append (ERROR_ID);
-        buffer.append ("']);} else {try {var result = "); // $NON-NLS-1$
-        buffer.append (functionName);
-        buffer.append ("(); window.external.callJava("); // $NON-NLS-1$
-        buffer.append (index);
-        buffer.append (",'"); //$NON-NLS-1$
-        buffer.append (function.token);
-        buffer.append ("', [result]);} catch (e) {window.external.callJava("); // $NON-NLS-1$
-        buffer.append (index);
-        buffer.append (",'"); //$NON-NLS-1$
-        buffer.append (function.token);
-        buffer.append ("', ['"); // $NON-NLS-1$
-        buffer.append (ERROR_ID);
-        buffer.append ("' + e.message]);}}"); // $NON-NLS-1$
-        execute (buffer.toString ());
-        execute (getDeleteFunctionString (functionName));
-        deregisterFunction (function);
-
-        Object result = evaluateResult;
-        evaluateResult = null;
-        if (result instanceof SWTException) throw (SWTException)result;
-        return result;
-    }
 
 
     public abstract boolean forward ();
@@ -507,9 +374,7 @@ abstract class WebBrowserView {
 
     public abstract void refresh ();
 
-    void registerFunction (BrowserViewFunction function) {
-        functions.put (function.index, function);
-    }
+
 
     public void removeAuthenticationListener (AuthenticationListener listener) {
         if (authenticationListeners.length == 0) return;

@@ -137,7 +137,6 @@ Java_it_marcom_swtedge_nat_NativeEdge_setBounds(JNIEnv *env,
 /*
  * Class:     it_marcom_swtedge_nat_NativeEdge
  * Method:    navigate
- * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_navigate(
     JNIEnv *env, jclass clazz, jlong w, jstring url) {
@@ -149,7 +148,6 @@ JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_navigate(
 /*
  * Class:     it_marcom_swtedge_nat_NativeEdge
  * Method:    init
- * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_init(
     JNIEnv *env, jclass clazz, jlong w, jstring js) {
@@ -161,7 +159,6 @@ JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_init(
 /*
  * Class:     it_marcom_swtedge_nat_NativeEdge
  * Method:    eval
- * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_eval(
     JNIEnv *env, jclass clazz, jlong w, jstring js, jobject fn) {
@@ -198,7 +195,6 @@ JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_eval(
 /*
  * Class:     it_marcom_swtedge_nat_NativeEdge
  * Method:    bind
- * Signature: (JLjava/lang/String;Lca/weblite/webview/WebViewNativeCallback;J)V
  */
 JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_bind(
     JNIEnv *env, jclass clazz, jlong wv, jstring name, jobject fn, jlong arg) {

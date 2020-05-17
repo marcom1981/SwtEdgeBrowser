@@ -742,6 +742,7 @@ using browser_engine = cocoa_wkwebview_engine;
 // EdgeHTML headers and libs
 #include <objbase.h>
 #include <winrt/Windows.Foundation.h>
+#include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Web.UI.Interop.h>
 #pragma comment(lib, "windowsapp")
 
@@ -782,7 +783,7 @@ using namespace winrt::Windows::Web::UI::Interop;
 
 class edge_html : public browser {
 public:
-  bool embed(HWND wnd, bool debug, msg_cb_t cb) override {
+  bool embed(HWND wnd, bool debug, msg_cb_t cb) override {	
     init_apartment(winrt::apartment_type::single_threaded);
     auto process = WebViewControlProcess();
     auto op = process.CreateWebViewControlAsync(
@@ -828,7 +829,7 @@ public:
 
   void eval(const std::string js, sync_eval_t fn) override {
     m_webview.InvokeScriptAsync(
-        L"eval", single_threaded_vector<hstring>({winrt::to_hstring(js)}));
+        L"eval", winrt::single_threaded_vector<hstring>({winrt::to_hstring(js)}));
   }
 
   void resize(HWND wnd) override {

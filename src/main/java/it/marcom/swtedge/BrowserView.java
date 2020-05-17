@@ -1,19 +1,18 @@
-package it.marcom.swtedge;
 /**
  * MIT License
- *
+ * <p>
  * Copyright (c) 2020 Marco Monacelli
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,6 +22,7 @@ package it.marcom.swtedge;
  * SOFTWARE.
  */
 
+package it.marcom.swtedge;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
@@ -32,7 +32,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Widget;
 
-public class BrowserView  extends Composite {
+public class BrowserView extends Composite {
+    Browser proxy;
     WebBrowserView webBrowser;
     int userStyle;
     boolean isClosing;
@@ -56,45 +57,44 @@ public class BrowserView  extends Composite {
      * </p>
      *
      * @param parent a widget which will be the parent of the new instance (cannot be null)
-     * @param style the style of widget to construct
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
-     * </ul>
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
-     * </ul>
-     * @exception SWTError <ul>
-     *    <li>ERROR_NO_HANDLES if a handle could not be obtained for browser creation</li>
-     * </ul>
-     *
+     * @param style  the style of widget to construct
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+     *                                  </ul>
+     * @throws SWTError                 <ul>
+     *                                  <li>ERROR_NO_HANDLES if a handle could not be obtained for browser creation</li>
+     *                                  </ul>
      * @see Widget#getStyle
-     *
      * @since 3.0
      */
-    public BrowserView (Composite parent, int style) {
-        super (checkParent (parent), checkStyle (style));
+    public BrowserView(Composite parent, int style) {
+        super(checkParent(parent), checkStyle(style));
         userStyle = style;
 
-        String platform = SWT.getPlatform ();
-        if ("gtk".equals (platform)) { //$NON-NLS-1$
-            parent.getDisplay ().setData (NO_INPUT_METHOD, null);
+        String platform = SWT.getPlatform();
+        if ("gtk".equals(platform)) { //$NON-NLS-1$
+            parent.getDisplay().setData(NO_INPUT_METHOD, null);
         }
 
-        style = getStyle ();
+        style = getStyle();
         webBrowser = new EdgeBrowser();
         if (webBrowser != null) {
             webBrowser.setBrowser(this);
             webBrowser.create(parent, style);
             return;
+        } else {
+            this.proxy = new Browser(parent, style);
         }
         dispose();
-        SWT.error (SWT.ERROR_NO_HANDLES);
+        SWT.error(SWT.ERROR_NO_HANDLES);
     }
 
-    static Composite checkParent (Composite parent) {
-        String platform = SWT.getPlatform ();
-        if (!"gtk".equals (platform)) return parent; //$NON-NLS-1$
+    static Composite checkParent(Composite parent) {
+        String platform = SWT.getPlatform();
+        if (!"gtk".equals(platform)) return parent; //$NON-NLS-1$
 
         /*
          * Note.  Mozilla provides all IM support needed for text input in web pages.
@@ -102,11 +102,11 @@ public class BrowserView  extends Composite {
          * indeterminate results to happen (hangs and crashes). The fix is to prevent
          * SWT from creating an input method context for the  Browser widget.
          */
-        if (parent != null && !parent.isDisposed ()) {
-            Display display = parent.getDisplay ();
+        if (parent != null && !parent.isDisposed()) {
+            Display display = parent.getDisplay();
             if (display != null) {
-                if (display.getThread () == Thread.currentThread ()) {
-                    display.setData (NO_INPUT_METHOD, "true"); //$NON-NLS-1$
+                if (display.getThread() == Thread.currentThread()) {
+                    display.setData(NO_INPUT_METHOD, "true"); //$NON-NLS-1$
                 }
             }
         }
@@ -114,7 +114,7 @@ public class BrowserView  extends Composite {
     }
 
     static int checkStyle(int style) {
-        String platform = SWT.getPlatform ();
+        String platform = SWT.getPlatform();
         if (DefaultType == SWT.DEFAULT) {
             /*
              * Some Browser clients that explicitly specify the native renderer to use
@@ -137,12 +137,12 @@ public class BrowserView  extends Composite {
              * static initializer.
              */
             try {
-                Class.forName ("org.eclipse.swt.browser.BrowserInitializer"); //$NON-NLS-1$
+                Class.forName("org.eclipse.swt.browser.BrowserInitializer"); //$NON-NLS-1$
             } catch (ClassNotFoundException e) {
                 /* no fragment is providing this class, which is the typical case */
             }
 
-            String value = System.getProperty (PROPERTY_DEFAULTTYPE);
+            String value = System.getProperty(PROPERTY_DEFAULTTYPE);
             if (value != null) {
                 int index = 0;
                 int length = value.length();
@@ -152,13 +152,13 @@ public class BrowserView  extends Composite {
                         newIndex = length;
                     }
                     String current = value.substring(index, newIndex).trim();
-                    if (current.equalsIgnoreCase ("mozilla")) { //$NON-NLS-1$
+                    if (current.equalsIgnoreCase("mozilla")) { //$NON-NLS-1$
                         DefaultType = SWT.MOZILLA;
                         break;
-                    } else if (current.equalsIgnoreCase ("webkit")) { //$NON-NLS-1$
+                    } else if (current.equalsIgnoreCase("webkit")) { //$NON-NLS-1$
                         DefaultType = SWT.WEBKIT;
                         break;
-                    } else if (current.equalsIgnoreCase ("ie") && "win32".equals (platform)) { //$NON-NLS-1$ //$NON-NLS-2$
+                    } else if (current.equalsIgnoreCase("ie") && "win32".equals(platform)) { //$NON-NLS-1$ //$NON-NLS-2$
                         DefaultType = SWT.NONE;
                         break;
                     }
@@ -181,7 +181,7 @@ public class BrowserView  extends Composite {
             return style;
         }
 
-        if ("win32".equals (platform)) { //$NON-NLS-1$
+        if ("win32".equals(platform)) { //$NON-NLS-1$
             /*
              * For IE on win32 the border is supplied by the embedded browser, so remove
              * the style so that the parent Composite will not draw a second border.
@@ -192,8 +192,8 @@ public class BrowserView  extends Composite {
     }
 
     @Override
-    protected void checkWidget () {
-        super.checkWidget ();
+    protected void checkWidget() {
+        super.checkWidget();
     }
 
     /**
@@ -201,8 +201,8 @@ public class BrowserView  extends Composite {
      *
      * @since 3.2
      */
-    public static void clearSessions () {
-        WebBrowserView.clearSessions ();
+    public static void clearSessions() {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -210,25 +210,21 @@ public class BrowserView  extends Composite {
      * Note that cookies are shared amongst all Browser instances.
      *
      * @param name the cookie name
-     * @param url the URL that the cookie is associated with
+     * @param url  the URL that the cookie is associated with
      * @return the cookie value, or <code>null</code> if no such cookie exists
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the name is null</li>
-     *    <li>ERROR_NULL_ARGUMENT - if the url is null</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the name is null</li>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the url is null</li>
+     *                                  </ul>
      * @since 3.5
      */
-    public static String getCookie (String name, String url) {
-        if (name == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        if (url == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        return WebBrowserView.GetCookie (name, url);
+    public static String getCookie(String name, String url) {
+        throw new UnsupportedOperationException();
     }
 
     /**
      * Sets a cookie on a URL.  Note that cookies are shared amongst all Browser instances.
-     *
+     * <p>
      * The <code>value</code> parameter must be a cookie header string that
      * complies with <a href="http://www.ietf.org/rfc/rfc2109.txt">RFC 2109</a>.
      * The value is passed through to the native browser unchanged.
@@ -240,20 +236,16 @@ public class BrowserView  extends Composite {
      * <code>foo=; expires=Thu, 01-Jan-1970 00:00:01 GMT</code> (deletes cookie <code>foo</code>)
      *
      * @param value the cookie value
-     * @param url the URL to associate the cookie with
+     * @param url   the URL to associate the cookie with
      * @return <code>true</code> if the cookie was successfully set and <code>false</code> otherwise
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the value is null</li>
-     *    <li>ERROR_NULL_ARGUMENT - if the url is null</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the value is null</li>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the url is null</li>
+     *                                  </ul>
      * @since 3.5
      */
-    public static boolean setCookie (String value, String url) {
-        if (value == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        if (url == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        return WebBrowserView.SetCookie (value, url, true);
+    public static boolean setCookie(String value, String url) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -265,22 +257,24 @@ public class BrowserView  extends Composite {
      * </p>
      *
      * @param listener the listener which should be notified
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @since 3.5
      */
-    public void addAuthenticationListener (AuthenticationListener listener) {
-        checkWidget();
-        if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        webBrowser.addAuthenticationListener (listener);
+    public void addAuthenticationListener(AuthenticationListener listener) {
+        if (proxy != null) {
+            proxy.addAuthenticationListener(listener);
+        } else {
+            checkWidget();
+            if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            webBrowser.addAuthenticationListener(listener);
+        }
+
     }
 
     /**
@@ -292,22 +286,24 @@ public class BrowserView  extends Composite {
      * </p>
      *
      * @param listener the listener which should be notified
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @since 3.0
      */
-    public void addCloseWindowListener (CloseWindowListener listener) {
-        checkWidget();
-        if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        webBrowser.addCloseWindowListener (listener);
+    public void addCloseWindowListener(CloseWindowListener listener) {
+        if (proxy != null) {
+            proxy.addCloseWindowListener(listener);
+        } else {
+            checkWidget();
+            if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            webBrowser.addCloseWindowListener(listener);
+        }
+
     }
 
     /**
@@ -320,22 +316,24 @@ public class BrowserView  extends Composite {
      * </p>
      *
      * @param listener the listener which should be notified
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @since 3.0
      */
-    public void addLocationListener (LocationListener listener) {
-        checkWidget();
-        if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        webBrowser.addLocationListener (listener);
+    public void addLocationListener(LocationListener listener) {
+        if (proxy != null) {
+            proxy.addLocationListener(listener);
+        } else {
+            checkWidget();
+            if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            webBrowser.addLocationListener(listener);
+        }
+
     }
 
     /**
@@ -347,22 +345,24 @@ public class BrowserView  extends Composite {
      * </p>
      *
      * @param listener the listener which should be notified
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @since 3.0
      */
-    public void addOpenWindowListener (OpenWindowListener listener) {
-        checkWidget();
-        if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        webBrowser.addOpenWindowListener (listener);
+    public void addOpenWindowListener(OpenWindowListener listener) {
+        if (proxy != null) {
+            proxy.addOpenWindowListener(listener);
+        } else {
+            checkWidget();
+            if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            webBrowser.addOpenWindowListener(listener);
+        }
+
     }
 
     /**
@@ -371,22 +371,24 @@ public class BrowserView  extends Composite {
      * URL or when the loading of the current URL has been completed.
      *
      * @param listener the listener which should be notified
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @since 3.0
      */
-    public void addProgressListener (ProgressListener listener) {
-        checkWidget();
-        if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        webBrowser.addProgressListener (listener);
+    public void addProgressListener(ProgressListener listener) {
+        if (proxy != null) {
+            proxy.addProgressListener(listener);
+        } else {
+            checkWidget();
+            if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            webBrowser.addProgressListener(listener);
+        }
+
     }
 
     /**
@@ -398,22 +400,24 @@ public class BrowserView  extends Composite {
      * </p>
      *
      * @param listener the listener which should be notified
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @since 3.0
      */
-    public void addStatusTextListener (StatusTextListener listener) {
-        checkWidget();
-        if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        webBrowser.addStatusTextListener (listener);
+    public void addStatusTextListener(StatusTextListener listener) {
+        if (proxy != null) {
+            proxy.addStatusTextListener(listener);
+        } else {
+            checkWidget();
+            if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            webBrowser.addStatusTextListener(listener);
+        }
+
     }
 
     /**
@@ -422,22 +426,24 @@ public class BrowserView  extends Composite {
      * or has changed.
      *
      * @param listener the listener which should be notified
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @since 3.0
      */
-    public void addTitleListener (TitleListener listener) {
-        checkWidget();
-        if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        webBrowser.addTitleListener (listener);
+    public void addTitleListener(TitleListener listener) {
+        if (proxy != null) {
+            proxy.addTitleListener(listener);
+        } else {
+            checkWidget();
+            if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            webBrowser.addTitleListener(listener);
+        }
+
     }
 
     /**
@@ -446,43 +452,46 @@ public class BrowserView  extends Composite {
      * or hidden.
      *
      * @param listener the listener which should be notified
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @since 3.0
      */
-    public void addVisibilityWindowListener (VisibilityWindowListener listener) {
-        checkWidget();
-        if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        webBrowser.addVisibilityWindowListener (listener);
+    public void addVisibilityWindowListener(VisibilityWindowListener listener) {
+        if (proxy != null) {
+            proxy.addVisibilityWindowListener(listener);
+        } else {
+            checkWidget();
+            if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            webBrowser.addVisibilityWindowListener(listener);
+        }
+
     }
 
     /**
      * Navigate to the previous session history item.
      *
      * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws SWTException <ul>
+     *                      <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                      <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                      </ul>
      * @see #forward
-     *
      * @since 3.0
      */
-    public boolean back () {
-        checkWidget();
-        return webBrowser.back ();
-    }
+    public boolean back() {
+        if (proxy != null) {
+            return proxy.back();
+        } else {
+            checkWidget();
+            return webBrowser.back();
+        }
 
+    }
 
 
     /**
@@ -494,26 +503,26 @@ public class BrowserView  extends Composite {
      * gives notification of this).
      *
      * @param script the script with javascript commands
-     *
      * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the script is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the script is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @see ProgressListener#completed(ProgressEvent)
-     *
      * @since 3.1
      */
-    public boolean execute (String script) {
-        checkWidget();
-        if (script == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        return webBrowser.execute (script);
+    public boolean execute(String script) {
+        if (proxy != null) {
+            return proxy.execute(script);
+        } else {
+            checkWidget();
+            if (script == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            return webBrowser.execute(script);
+        }
+
     }
 
     /**
@@ -522,25 +531,27 @@ public class BrowserView  extends Composite {
      * in the Browser's current page.
      *
      * @return <code>true</code> if the receiver was disposed, and <code>false</code> otherwise
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
-     *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
-     * </ul>
-     *
+     * @throws SWTException <ul>
+     *                      <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+     *                      <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+     *                      </ul>
      * @see #dispose()
-     *
      * @since 3.6
      */
-    public boolean close () {
-        checkWidget();
-        if (webBrowser.close ()) {
-            isClosing = true;
-            dispose ();
-            isClosing = false;
-            return true;
+    public boolean close() {
+        if (proxy != null) {
+            return proxy.close();
+        } else {
+            checkWidget();
+            if (webBrowser.close()) {
+                isClosing = true;
+                dispose();
+                isClosing = false;
+                return true;
+            }
+            return false;
         }
-        return false;
+
     }
 
     /**
@@ -562,34 +573,34 @@ public class BrowserView  extends Composite {
      * <li>javascript boolean -> <code>java.lang.Boolean</code></li>
      * <li>javascript array whose elements are all of supported types -> <code>java.lang.Object[]</code></li>
      * </ul>
-     *
+     * <p>
      * An <code>SWTException</code> is thrown if the return value has an
      * unsupported type, or if evaluating the script causes a javascript
      * error to be thrown.
      *
      * @param script the script with javascript commands
-     *
      * @return the return value, if any, of executing the script
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the script is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_FAILED_EVALUATE when the script evaluation causes a javascript error to be thrown</li>
-     *    <li>ERROR_INVALID_RETURN_VALUE when the script returns a value of unsupported type</li>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
-     * @see Browser#evaluate(String,boolean)
+     * @throws IllegalArgumentException <ul>
+     *                                     <li>ERROR_NULL_ARGUMENT - if the script is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                     <li>ERROR_FAILED_EVALUATE when the script evaluation causes a javascript error to be thrown</li>
+     *                                     <li>ERROR_INVALID_RETURN_VALUE when the script returns a value of unsupported type</li>
+     *                                     <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                     <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
+     * @see Browser#evaluate(String, boolean)
      * @see ProgressListener#completed(ProgressEvent)
-     *
      * @since 3.5
      */
-    public Object evaluate (String script) throws SWTException {
-        checkWidget();
-        return evaluate (script, false);
+    public Object evaluate(String script) throws SWTException {
+        if (proxy != null) {
+            return proxy.evaluate(script);
+        } else {
+            checkWidget();
+            return evaluate(script, false);
+        }
+
     }
 
     /**
@@ -621,47 +632,52 @@ public class BrowserView  extends Composite {
      * </p><p>
      * Note: Chrome security context is applicable only to Browsers with style <code>SWT.Mozilla</code>.
      * </p>
-     * @param script the script with javascript commands
+     *
+     * @param script  the script with javascript commands
      * @param trusted <code>true> or <code>false</code> depending on the security context to be used
-     *
      * @return the return value, if any, of executing the script
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the script is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_FAILED_EVALUATE when the script evaluation causes a javascript error to be thrown</li>
-     *    <li>ERROR_INVALID_RETURN_VALUE when the script returns a value of unsupported type</li>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                     <li>ERROR_NULL_ARGUMENT - if the script is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                     <li>ERROR_FAILED_EVALUATE when the script evaluation causes a javascript error to be thrown</li>
+     *                                     <li>ERROR_INVALID_RETURN_VALUE when the script returns a value of unsupported type</li>
+     *                                     <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                     <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @see ProgressListener#completed(ProgressEvent)
      */
-    public Object evaluate (String script, boolean trusted) throws SWTException {
-        checkWidget();
-        if (script == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        return webBrowser.evaluate (script, trusted);
+    public Object evaluate(String script, boolean trusted) throws SWTException {
+        if (proxy != null) {
+            return proxy.evaluate(script, trusted);
+        } else {
+            checkWidget();
+            if (script == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            return webBrowser.evaluate(script, trusted);
+        }
+
+
     }
 
     /**
      * Navigate to the next session history item.
      *
      * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws SWTException <ul>
+     *                      <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                      <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                      </ul>
      * @see #back
-     *
      * @since 3.0
      */
-    public boolean forward () {
-        checkWidget();
-        return webBrowser.forward ();
+    public boolean forward() {
+        if (proxy != null) {
+            return proxy.forward();
+        } else {
+            checkWidget();
+            return webBrowser.forward();
+        }
+
     }
 
     /**
@@ -669,12 +685,16 @@ public class BrowserView  extends Composite {
      * Examples: "ie", "mozilla", "voyager", "webkit"
      *
      * @return the type of the native browser
-     *
      * @since 3.5
      */
-    public String getBrowserType () {
-        checkWidget();
-        return webBrowser.getBrowserType ();
+    public String getBrowserType() {
+        if (proxy != null) {
+            return proxy.getBrowserType();
+        } else {
+            checkWidget();
+            return webBrowser.getBrowserType();
+        }
+
     }
 
     /**
@@ -685,28 +705,35 @@ public class BrowserView  extends Composite {
      * its lifetime.
      *
      * @return the receiver's javascript enabled state
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
-     *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
-     * </ul>
-     *
+     * @throws SWTException <ul>
+     *                      <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+     *                      <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+     *                      </ul>
      * @see #setJavascriptEnabled
-     *
      * @since 3.5
      */
-    public boolean getJavascriptEnabled () {
-        checkWidget();
-        return webBrowser.jsEnabledOnNextPage;
+    public boolean getJavascriptEnabled() {
+        if (proxy != null) {
+            return proxy.getJavascriptEnabled();
+        } else {
+            checkWidget();
+            return webBrowser.jsEnabledOnNextPage;
+        }
+
     }
 
     @Override
-    public int getStyle () {
-        /*
-         * If SWT.BORDER was specified at creation time then getStyle() should answer
-         * it even though it is removed for IE on win32 in checkStyle().
-         */
-        return super.getStyle () | (userStyle & SWT.BORDER);
+    public int getStyle() {
+        if (proxy != null) {
+            return proxy.getStyle();
+        } else {
+            /*
+             * If SWT.BORDER was specified at creation time then getStyle() should answer
+             * it even though it is removed for IE on win32 in checkStyle().
+             */
+            return super.getStyle() | (userStyle & SWT.BORDER);
+        }
+
     }
 
     /**
@@ -714,54 +741,73 @@ public class BrowserView  extends Composite {
      *
      * @return HTML representing the current page or an empty <code>String</code>
      * if this is empty
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws SWTException <ul>
+     *                      <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                      <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                      </ul>
      * @since 3.4
      */
-    public String getText () {
-        checkWidget();
-        return webBrowser.getText ();
+    public String getText() {
+        if (proxy != null) {
+            return proxy.getText();
+        } else {
+            /*
+             * If SWT.BORDER was specified at creation time then getStyle() should answer
+             * it even though it is removed for IE on win32 in checkStyle().
+             */
+            checkWidget();
+            return webBrowser.getText();
+        }
     }
 
     /**
      * Returns the current URL.
      *
      * @return the current URL or an empty <code>String</code> if there is no current URL
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws SWTException <ul>
+     *                      <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                      <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                      </ul>
      * @see #setUrl
-     *
      * @since 3.0
      */
-    public String getUrl () {
-        checkWidget();
-        return webBrowser.getUrl ();
+    public String getUrl() {
+        if (proxy != null) {
+            return proxy.getUrl();
+        } else {
+            /*
+             * If SWT.BORDER was specified at creation time then getStyle() should answer
+             * it even though it is removed for IE on win32 in checkStyle().
+             */
+            checkWidget();
+            return webBrowser.getUrl();
+        }
     }
 
     /**
      * Returns the JavaXPCOM <code>nsIWebBrowser</code> for the receiver, or <code>null</code>
      * if it is not available.  In order for an <code>nsIWebBrowser</code> to be returned all
      * of the following must be true: <ul>
-     *    <li>the receiver's style must be <code>SWT.MOZILLA</code></li>
-     *    <li>the classes from JavaXPCOM &gt;= 1.8.1.2 must be resolvable at runtime</li>
-     *    <li>the version of the underlying XULRunner must be &gt;= 1.8.1.2</li>
+     * <li>the receiver's style must be <code>SWT.MOZILLA</code></li>
+     * <li>the classes from JavaXPCOM &gt;= 1.8.1.2 must be resolvable at runtime</li>
+     * <li>the version of the underlying XULRunner must be &gt;= 1.8.1.2</li>
      * </ul>
      *
      * @return the receiver's JavaXPCOM <code>nsIWebBrowser</code> or <code>null</code>
-     *
      * @since 3.3
      */
-    public Object getWebBrowser () {
-        checkWidget();
-        return webBrowser.getWebBrowser ();
+    public Object getWebBrowser() {
+        if (proxy != null) {
+            return proxy.getUrl();
+        } else {
+            /*
+             * If SWT.BORDER was specified at creation time then getStyle() should answer
+             * it even though it is removed for IE on win32 in checkStyle().
+             */
+            checkWidget();
+            return webBrowser.getWebBrowser();
+        }
+
     }
 
     /**
@@ -769,24 +815,36 @@ public class BrowserView  extends Composite {
      * previous session history item, and <code>false</code> otherwise.
      *
      * @return the receiver's back command enabled state
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
-     *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
-     * </ul>
-     *
+     * @throws SWTException <ul>
+     *                      <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+     *                      <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+     *                      </ul>
      * @see #back
      */
-    public boolean isBackEnabled () {
-        checkWidget();
-        return webBrowser.isBackEnabled ();
+    public boolean isBackEnabled() {
+        if (proxy != null) {
+            return proxy.isBackEnabled();
+        } else {
+            /*
+             * If SWT.BORDER was specified at creation time then getStyle() should answer
+             * it even though it is removed for IE on win32 in checkStyle().
+             */
+            checkWidget();
+            return webBrowser.isBackEnabled();
+        }
+
     }
 
     @Override
-    public boolean isFocusControl () {
-        checkWidget();
-        if (webBrowser.isFocusControl ()) return true;
-        return super.isFocusControl ();
+    public boolean isFocusControl() {
+        if (proxy != null) {
+            return proxy.isFocusControl();
+        } else {
+            checkWidget();
+            if (webBrowser.isFocusControl()) return true;
+            return super.isFocusControl();
+        }
+
     }
 
     /**
@@ -794,32 +852,39 @@ public class BrowserView  extends Composite {
      * next session history item, and <code>false</code> otherwise.
      *
      * @return the receiver's forward command enabled state
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
-     *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
-     * </ul>
-     *
+     * @throws SWTException <ul>
+     *                      <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+     *                      <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+     *                      </ul>
      * @see #forward
      */
-    public boolean isForwardEnabled () {
-        checkWidget();
-        return webBrowser.isForwardEnabled ();
+    public boolean isForwardEnabled() {
+        if (proxy != null) {
+            return proxy.isForwardEnabled();
+        } else {
+            checkWidget();
+            return webBrowser.isForwardEnabled();
+        }
+
     }
 
     /**
      * Refresh the current page.
      *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws SWTException <ul>
+     *                      <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                      <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                      </ul>
      * @since 3.0
      */
-    public void refresh () {
-        checkWidget();
-        webBrowser.refresh ();
+    public void refresh() {
+        if (proxy != null) {
+            proxy.refresh();
+        } else {
+            checkWidget();
+            webBrowser.refresh();
+        }
+
     }
 
     /**
@@ -827,22 +892,24 @@ public class BrowserView  extends Composite {
      * be notified when authentication is required.
      *
      * @param listener the listener which should no longer be notified
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @since 3.5
      */
-    public void removeAuthenticationListener (AuthenticationListener listener) {
-        checkWidget();
-        if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        webBrowser.removeAuthenticationListener (listener);
+    public void removeAuthenticationListener(AuthenticationListener listener) {
+        if (proxy != null) {
+            proxy.removeAuthenticationListener(listener);
+        } else {
+            checkWidget();
+            if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            webBrowser.removeAuthenticationListener(listener);
+        }
+
     }
 
     /**
@@ -850,22 +917,24 @@ public class BrowserView  extends Composite {
      * be notified when the window hosting the receiver should be closed.
      *
      * @param listener the listener which should no longer be notified
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @since 3.0
      */
-    public void removeCloseWindowListener (CloseWindowListener listener) {
-        checkWidget();
-        if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        webBrowser.removeCloseWindowListener (listener);
+    public void removeCloseWindowListener(CloseWindowListener listener) {
+        if (proxy != null) {
+            proxy.removeCloseWindowListener(listener);
+        } else {
+            checkWidget();
+            if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            webBrowser.removeCloseWindowListener(listener);
+        }
+
     }
 
     /**
@@ -873,22 +942,24 @@ public class BrowserView  extends Composite {
      * be notified when the current location is changed or about to be changed.
      *
      * @param listener the listener which should no longer be notified
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @since 3.0
      */
-    public void removeLocationListener (LocationListener listener) {
-        checkWidget();
-        if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        webBrowser.removeLocationListener (listener);
+    public void removeLocationListener(LocationListener listener) {
+        if (proxy != null) {
+            proxy.removeLocationListener(listener);
+        } else {
+            checkWidget();
+            if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            webBrowser.removeLocationListener(listener);
+        }
+
     }
 
     /**
@@ -896,22 +967,24 @@ public class BrowserView  extends Composite {
      * be notified when a new window needs to be created.
      *
      * @param listener the listener which should no longer be notified
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @since 3.0
      */
-    public void removeOpenWindowListener (OpenWindowListener listener) {
-        checkWidget();
-        if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        webBrowser.removeOpenWindowListener (listener);
+    public void removeOpenWindowListener(OpenWindowListener listener) {
+        if (proxy != null) {
+            proxy.removeOpenWindowListener(listener);
+        } else {
+            checkWidget();
+            if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            webBrowser.removeOpenWindowListener(listener);
+        }
+
     }
 
     /**
@@ -920,22 +993,24 @@ public class BrowserView  extends Composite {
      * URL or when the loading of the current URL has been completed.
      *
      * @param listener the listener which should no longer be notified
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @since 3.0
      */
-    public void removeProgressListener (ProgressListener listener) {
-        checkWidget();
-        if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        webBrowser.removeProgressListener (listener);
+    public void removeProgressListener(ProgressListener listener) {
+        if (proxy != null) {
+            proxy.removeProgressListener(listener);
+        } else {
+            checkWidget();
+            if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            webBrowser.removeProgressListener(listener);
+        }
+
     }
 
     /**
@@ -943,22 +1018,24 @@ public class BrowserView  extends Composite {
      * be notified when the status text is changed.
      *
      * @param listener the listener which should no longer be notified
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @since 3.0
      */
-    public void removeStatusTextListener (StatusTextListener listener) {
-        checkWidget();
-        if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        webBrowser.removeStatusTextListener (listener);
+    public void removeStatusTextListener(StatusTextListener listener) {
+        if (proxy != null) {
+            proxy.removeStatusTextListener(listener);
+        } else {
+            checkWidget();
+            if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            webBrowser.removeStatusTextListener(listener);
+        }
+
     }
 
     /**
@@ -967,22 +1044,24 @@ public class BrowserView  extends Composite {
      * or has changed.
      *
      * @param listener the listener which should no longer be notified
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @since 3.0
      */
-    public void removeTitleListener (TitleListener listener) {
-        checkWidget();
-        if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        webBrowser.removeTitleListener (listener);
+    public void removeTitleListener(TitleListener listener) {
+        if (proxy != null) {
+            proxy.removeTitleListener(listener);
+        } else {
+            checkWidget();
+            if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            webBrowser.removeTitleListener(listener);
+        }
+
     }
 
     /**
@@ -991,22 +1070,24 @@ public class BrowserView  extends Composite {
      * or hidden.
      *
      * @param listener the listener which should no longer be notified
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @since 3.0
      */
-    public void removeVisibilityWindowListener (VisibilityWindowListener listener) {
-        checkWidget();
-        if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        webBrowser.removeVisibilityWindowListener (listener);
+    public void removeVisibilityWindowListener(VisibilityWindowListener listener) {
+        if (proxy != null) {
+            proxy.removeVisibilityWindowListener(listener);
+        } else {
+            checkWidget();
+            if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            webBrowser.removeVisibilityWindowListener(listener);
+        }
+
     }
 
     /**
@@ -1015,17 +1096,20 @@ public class BrowserView  extends Composite {
      * the running of javascript in the current page.
      *
      * @param enabled the receiver's new javascript enabled state
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
-     *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
-     * </ul>
-     *
+     * @throws SWTException <ul>
+     *                      <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+     *                      <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+     *                      </ul>
      * @since 3.5
      */
-    public void setJavascriptEnabled (boolean enabled) {
-        checkWidget();
-        webBrowser.jsEnabledOnNextPage = enabled;
+    public void setJavascriptEnabled(boolean enabled) {
+        if (proxy != null) {
+            proxy.setJavascriptEnabled(enabled);
+        } else {
+            checkWidget();
+            webBrowser.jsEnabledOnNextPage = enabled;
+        }
+
     }
 
     /**
@@ -1038,26 +1122,26 @@ public class BrowserView  extends Composite {
      * by the <code>String</code> itself.
      *
      * @param html the HTML content to be rendered
-     *
      * @return true if the operation was successful and false otherwise.
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the html is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
-     * @see #setText(String,boolean)
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the html is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
+     * @see #setText(String, boolean)
      * @see #setUrl
-     *
      * @since 3.0
      */
-    public boolean setText (String html) {
-        checkWidget();
-        return setText (html, true);
+    public boolean setText(String html) {
+        if (proxy != null) {
+            return proxy.setText(html);
+        } else {
+            checkWidget();
+            return setText(html, true);
+        }
+
     }
 
     /**
@@ -1076,56 +1160,56 @@ public class BrowserView  extends Composite {
      * allow (for instance) style sheets on the local file system to be referenced.  Page
      * content should be specified as untrusted if its source is not trusted or is not known.
      *
-     * @param html the HTML content to be rendered
+     * @param html    the HTML content to be rendered
      * @param trusted <code>false</code> if the rendered page should be granted restricted
-     * permissions and <code>true</code> otherwise
-     *
+     *                permissions and <code>true</code> otherwise
      * @return <code>true</code> if the operation was successful and <code>false</code> otherwise.
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the html is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the html is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @see #setText(String)
      * @see #setUrl
-     *
      * @since 3.6
      */
-    public boolean setText (String html, boolean trusted) {
-        checkWidget();
-        if (html == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        return webBrowser.setText (html, trusted);
+    public boolean setText(String html, boolean trusted) {
+        if (proxy != null) {
+            return proxy.setText(html, trusted);
+        } else {
+            checkWidget();
+            if (html == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            return webBrowser.setText(html, trusted);
+        }
+
     }
 
     /**
      * Begins loading a URL.  The loading of its content occurs asynchronously.
      *
      * @param url the URL to be loaded
-     *
      * @return true if the operation was successful and false otherwise.
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the url is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the url is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @see #getUrl
-     * @see #setUrl(String,String,String[])
-     *
+     * @see #setUrl(String, String, String[])
      * @since 3.0
      */
-    public boolean setUrl (String url) {
-        checkWidget();
-        return setUrl (url, null, null);
+    public boolean setUrl(String url) {
+        if (proxy != null) {
+            return proxy.setUrl(url);
+        } else {
+            checkWidget();
+            return setUrl(url, null, null);
+        }
+
     }
 
     /**
@@ -1137,41 +1221,46 @@ public class BrowserView  extends Composite {
      * must be a name-value pair with a colon separator in order to be sent
      * (for example: "<code>user-agent: custom</code>").
      *
-     * @param url the URL to be loaded
+     * @param url      the URL to be loaded
      * @param postData post data to be sent with the request, or <code>null</code>
-     * @param headers header lines to be sent with the request, or <code>null</code>
-     *
+     * @param headers  header lines to be sent with the request, or <code>null</code>
      * @return <code>true</code> if the operation was successful and <code>false</code> otherwise.
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if the url is null</li>
-     * </ul>
-     *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws IllegalArgumentException <ul>
+     *                                  <li>ERROR_NULL_ARGUMENT - if the url is null</li>
+     *                                  </ul>
+     * @throws SWTException             <ul>
+     *                                  <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                  <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                  </ul>
      * @since 3.6
      */
-    public boolean setUrl (String url, String postData, String[] headers) {
-        checkWidget();
-        if (url == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-        return webBrowser.setUrl (url, postData, headers);
+    public boolean setUrl(String url, String postData, String[] headers) {
+        if (proxy != null) {
+            return proxy.setUrl(url, postData, headers);
+        } else {
+            checkWidget();
+            if (url == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            return webBrowser.setUrl(url, postData, headers);
+        }
+
     }
 
     /**
      * Stop any loading and rendering activity.
      *
-     * @exception SWTException <ul>
-     *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     * </ul>
-     *
+     * @throws SWTException <ul>
+     *                      <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                      <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                      </ul>
      * @since 3.0
      */
-    public void stop () {
-        checkWidget();
-        webBrowser.stop ();
+    public void stop() {
+        if (proxy != null) {
+            proxy.stop();
+        } else {
+            checkWidget();
+            webBrowser.stop();
+        }
+
     }
 }

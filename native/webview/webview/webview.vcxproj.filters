@@ -27,7 +27,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="webview.cc">
+    <ClCompile Include="webview_jni.cc">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>

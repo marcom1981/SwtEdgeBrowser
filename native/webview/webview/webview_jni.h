@@ -18,7 +18,6 @@ JNIEXPORT jlong JNICALL Java_it_marcom_swtedge_nat_NativeEdge_create
 /*
  * Class:     it_marcom_swtedge_nat_NativeEdge
  * Method:    webview_destroy
- * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_destroy
   (JNIEnv *, jclass, jlong);
@@ -26,7 +25,6 @@ JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_destroy
 /*
  * Class:     it_marcom_swtedge_nat_NativeEdge
  * Method:    webview_run
- * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_run
   (JNIEnv *, jclass, jlong);
@@ -34,7 +32,6 @@ JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_run
 /*
  * Class:     it_marcom_swtedge_nat_NativeEdge
  * Method:    webview_terminate
- * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_terminate
   (JNIEnv *, jclass, jlong);
@@ -42,7 +39,6 @@ JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_terminate
 /*
  * Class:     it_marcom_swtedge_nat_NativeEdge
  * Method:    webview_dispatch
- * Signature: (JLjava/lang/Runnable;J)V
  */
 JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_dispatch
   (JNIEnv *, jclass, jlong, jobject, jlong);
@@ -50,7 +46,6 @@ JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_dispatch
 /*
  * Class:     it_marcom_swtedge_nat_NativeEdge
  * Method:    webview_get_window
- * Signature: (J)J
  */
 JNIEXPORT jlong JNICALL Java_it_marcom_swtedge_nat_NativeEdge_getWindow
   (JNIEnv *, jclass, jlong);
@@ -58,7 +53,6 @@ JNIEXPORT jlong JNICALL Java_it_marcom_swtedge_nat_NativeEdge_getWindow
 /*
  * Class:     it_marcom_swtedge_nat_NativeEdge
  * Method:    webview_set_title
- * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_setTitle
   (JNIEnv *, jclass, jlong, jstring);
@@ -66,7 +60,6 @@ JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_setTitle
 /*
  * Class:     it_marcom_swtedge_nat_NativeEdge
  * Method:    webview_set_bounds
- * Signature: (JIIIII)V
  */
 JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_setBounds
   (JNIEnv *, jclass, jlong, jint, jint, jint, jint, jint);
@@ -74,7 +67,6 @@ JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_setBounds
 /*
  * Class:     it_marcom_swtedge_nat_NativeEdge
  * Method:    webview_navigate
- * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_navigate
   (JNIEnv *, jclass, jlong, jstring);
@@ -82,7 +74,6 @@ JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_navigate
 /*
  * Class:     it_marcom_swtedge_nat_NativeEdge
  * Method:    webview_init
- * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_init
   (JNIEnv *, jclass, jlong, jstring);
@@ -90,7 +81,6 @@ JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_init
 /*
  * Class:     it_marcom_swtedge_nat_NativeEdge
  * Method:    webview_eval
- * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_eval(
     JNIEnv *, jclass, jlong, jstring, jobject);
@@ -98,7 +88,6 @@ JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_eval(
 /*
  * Class:     it_marcom_swtedge_nat_NativeEdge
  * Method:    webview_bind
- * Signature: (JLjava/lang/String;Lca/weblite/webview/WebViewNativeCallback;J)V
  */
 JNIEXPORT void JNICALL Java_it_marcom_swtedge_nat_NativeEdge_bind
   (JNIEnv *, jclass, jlong, jstring, jobject, jlong);
