@@ -142,7 +142,7 @@ public class BrowserViewFunction {
         super();
         this.browser = browser;
         this.name = name;
-        if (browser.webBrowser instanceof EdgeBrowser) {
+        if (!browser.isProxy()) {
 
             WebViewNativeCallback callback = new WebViewNativeCallback() {
                 @Override
@@ -167,7 +167,7 @@ public class BrowserViewFunction {
             //Reload init Script.
             ((EdgeBrowser) browser.webBrowser).getEdge().reload();
         } else {
-            proxyFuction = new BrowserFunction(browser.proxy, name, top, frameNames) {
+            proxyFuction = new BrowserFunction(browser.proxy, name) {
                 @Override
                 public Object function(Object[] arguments) {
                     return functionProxy(arguments);

@@ -25,6 +25,7 @@ package it.marcom.swtedge;
 
 import it.marcom.swtedge.nat.EvaluationCallBack;
 import it.marcom.swtedge.nat.NativeEdge;
+import it.marcom.swtedge.nat.NativeEdgeException;
 import it.marcom.swtedge.nat.WebViewNativeCallback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -63,15 +64,21 @@ public class EdgeBrowser extends WebBrowserView {
     @Override
     public void create(Composite composite, int i) {
         this.parent = composite;
-        edge = new NativeEdge(parent.handle);
-        edge.setBounds(0, 0, parent.getSize().x, parent.getSize().y, 0);
-        parent.addListener(SWT.Resize, new Listener() {
-            @Override
-            public void handleEvent(org.eclipse.swt.widgets.Event event) {
-                edge.setBounds(0, 0, parent.getSize().x, parent.getSize().y, 0);
-            }
-        });
-        initMsgHook(browser.getDisplay());
+        try {
+            edge = new NativeEdge(parent.handle);
+            edge.setBounds(0, 0, parent.getSize().x, parent.getSize().y, 0);
+            parent.addListener(SWT.Resize, new Listener() {
+                @Override
+                public void handleEvent(org.eclipse.swt.widgets.Event event) {
+                    edge.setBounds(0, 0, parent.getSize().x, parent.getSize().y, 0);
+                }
+            });
+
+            initMsgHook(parent.getDisplay());
+        } catch (NativeEdgeException ex) {
+            throw new Error("No Edge Avaiable");
+
+        }
     }
 
     private static void initMsgHook(Display display) {
@@ -104,18 +111,22 @@ public class EdgeBrowser extends WebBrowserView {
     @Override
     public Object evaluate(String script) throws SWTException {
         EvaluateFuture future = new EvaluateFuture();
-        edge.eval(script, future);
+        if (script.startsWith("return(")) {
+            edge.eval("JSON.stringify" + script.substring(6), future);
+        } else {
+            edge.eval(script, future);
+        }
         try {
             while (true) {
                 try {
                     String value = future.getFuture().get(1, TimeUnit.MILLISECONDS);
-                    if(value!=null) {
+                    if (value != null) {
                         return JsUtils.jsonToObject(value);
-                    }else{
+                    } else {
                         return null;
                     }
                 } catch (TimeoutException e) {
-                    browser.getDisplay().readAndDispatch();
+                    parent.getDisplay().readAndDispatch();
                 }
             }
         } catch (InterruptedException e) {
@@ -128,7 +139,7 @@ public class EdgeBrowser extends WebBrowserView {
     }
 
 
-    public NativeEdge getEdge(){
+    public NativeEdge getEdge() {
         return edge;
     }
 

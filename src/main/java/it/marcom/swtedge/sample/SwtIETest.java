@@ -25,7 +25,7 @@ public class SwtIETest {
         compTools.setLayoutData(data);
         compTools.setLayout(new GridLayout(2, false));
 
-        ToolBar navBar = new ToolBar(compTools, SWT.NONE);
+        ToolBar navBar = new ToolBar(shell, SWT.NONE);
         navBar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.HORIZONTAL_ALIGN_END));
         final ToolItem execute = new ToolItem(navBar, SWT.PUSH);
         execute.setText("Execute Script");
@@ -35,7 +35,6 @@ public class SwtIETest {
 
         final ToolItem navigate = new ToolItem(navBar, SWT.PUSH);
         navigate.setText("Navigate");
-
 
         Composite comp = new Composite(shell, SWT.NONE);
         data = new GridData(GridData.FILL_BOTH);
@@ -52,7 +51,7 @@ public class SwtIETest {
             System.exit(-1);
         }
 
-        //        browser.setUrl("https://www.google.it");
+
 
         browser.setText("<!doctype html>\n" +
                 "		<html>\n" +
@@ -76,6 +75,7 @@ public class SwtIETest {
                 "           </body>\n" +
                 "            \n" +
                 "		</html>");
+
 
 
         BrowserFunction function = new BrowserFunction(browser,"addCall"){
@@ -106,17 +106,6 @@ public class SwtIETest {
                 browser.setUrl("https://www.google.it");
             }
         });
-
-        final LocationListener locationListener = new LocationListener() {
-            public void changed(LocationEvent event) {
-                Browser browser = (Browser) event.widget;
-                execute.setEnabled(browser.isBackEnabled());
-                navigate.setEnabled(browser.isForwardEnabled());
-            }
-
-            public void changing(LocationEvent event) {
-            }
-        };
 
 
         shell.open();

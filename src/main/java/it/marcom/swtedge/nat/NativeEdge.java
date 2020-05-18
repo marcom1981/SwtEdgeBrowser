@@ -67,12 +67,17 @@ public class NativeEdge {
     private long edgePointer;
 
 
-    public NativeEdge() {
+    public NativeEdge() throws NativeEdgeException {
         this(0);
     }
 
-    public NativeEdge(long parentWindow) {
+    public NativeEdge(long parentWindow) throws NativeEdgeException{
         edgePointer = create(0, parentWindow);
+        if(getWindow(edgePointer)==0){
+            destroy(edgePointer);
+            edgePointer=0;
+            throw new NativeEdgeException();
+        }
     }
 
 
@@ -105,7 +110,9 @@ public class NativeEdge {
 
     @Override
     public void finalize() throws Throwable {
-        destroy(edgePointer);
+        if(edgePointer!=0) {
+            destroy(edgePointer);
+        }
         super.finalize();
     }
 

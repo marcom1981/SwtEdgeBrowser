@@ -27,7 +27,7 @@ public class SwtEdgeTest {
         compTools.setLayoutData(data);
         compTools.setLayout(new GridLayout(2, false));
 
-        ToolBar navBar = new ToolBar(compTools, SWT.NONE);
+        ToolBar navBar = new ToolBar(shell, SWT.NONE);
         navBar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.HORIZONTAL_ALIGN_END));
         final ToolItem execute = new ToolItem(navBar, SWT.PUSH);
         execute.setText("Execute Script");
@@ -54,39 +54,17 @@ public class SwtEdgeTest {
         }
 
 
-//        BrowserViewFunction function = new BrowserViewFunction(browser,"prova"){
-//            @Override
-//            public Object function(Object[] arguments) {
-//                return super.function(arguments);
-//            }
-//        };
-//        WebViewNativeCallback fn = new WebViewNativeCallback() {
-//            @Override
-//            public String invoke(String s, long l) {
-//                //WebViewNative.webview_eval(peer,"alert(\"provata\")",null);
-//                return "\"provata\"";
-//            }
-//        };
-//        edge.bind("prova", fn);
-
-//        browser.setUrl("https://www.google.it");
 
         browser.setText("<!doctype html>\n" +
                 "		<html>\n" +
                 "			<body>\n" +
-                "           <script>\n" +
-                "           function add(a,b){\n" +
-                "               return (a + b);\n" +
-                "           }\n" +
-                "           function callFunction2(){\n" +
-                "               return callFunction();"+
-                "           }\n" +
-                "           async function callFunction(){\n" +
-                "               var res = await prova();\n" +
-                "               return res;"+
-                "           }\n" +
+                "           <script>" +
+                "           function add(a,b){" +
+                "               return a+b;"+
+                "           }"+
                 "           window.onload = function() {\n" +
-                "					document.getElementById(\"browser\").innerText =`Browser Info:, ${navigator.userAgent}`;\n" +
+                "                   var text = \"Browser Info:\" +navigator.userAgent;" +
+                "					document.getElementById(\"browser\").innerText =text\n" +
                 "				};\n" +
                 "           </script>" +
                 "               <div>" +
@@ -99,6 +77,7 @@ public class SwtEdgeTest {
                 "           </body>\n" +
                 "            \n" +
                 "		</html>");
+
 
 
         BrowserViewFunction function = new BrowserViewFunction(browser,"addCall"){
@@ -120,7 +99,7 @@ public class SwtEdgeTest {
 
         evaluate.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event event) {
-                System.out.println(browser.evaluate("JSON.stringify(add(2,3));"));
+                System.out.println(browser.evaluate("return(add(2,3));"));
             }
         });
 

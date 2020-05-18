@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Widget;
 
-public class BrowserView extends Composite {
+public class BrowserView  {
     Browser proxy;
     WebBrowserView webBrowser;
     int userStyle;
@@ -71,130 +71,21 @@ public class BrowserView extends Composite {
      * @since 3.0
      */
     public BrowserView(Composite parent, int style) {
-        super(checkParent(parent), checkStyle(style));
-        userStyle = style;
-
-        String platform = SWT.getPlatform();
-        if ("gtk".equals(platform)) { //$NON-NLS-1$
-            parent.getDisplay().setData(NO_INPUT_METHOD, null);
-        }
-
-        style = getStyle();
         webBrowser = new EdgeBrowser();
         if (webBrowser != null) {
             webBrowser.setBrowser(this);
-            webBrowser.create(parent, style);
-            return;
-        } else {
-            this.proxy = new Browser(parent, style);
-        }
-        dispose();
-        SWT.error(SWT.ERROR_NO_HANDLES);
-    }
-
-    static Composite checkParent(Composite parent) {
-        String platform = SWT.getPlatform();
-        if (!"gtk".equals(platform)) return parent; //$NON-NLS-1$
-
-        /*
-         * Note.  Mozilla provides all IM support needed for text input in web pages.
-         * If SWT creates another input method context for the widget it will cause
-         * indeterminate results to happen (hangs and crashes). The fix is to prevent
-         * SWT from creating an input method context for the  Browser widget.
-         */
-        if (parent != null && !parent.isDisposed()) {
-            Display display = parent.getDisplay();
-            if (display != null) {
-                if (display.getThread() == Thread.currentThread()) {
-                    display.setData(NO_INPUT_METHOD, "true"); //$NON-NLS-1$
-                }
-            }
-        }
-        return parent;
-    }
-
-    static int checkStyle(int style) {
-        String platform = SWT.getPlatform();
-        if (DefaultType == SWT.DEFAULT) {
-            /*
-             * Some Browser clients that explicitly specify the native renderer to use
-             * (by creating a Browser with style SWT.MOZILLA or SWT.WEBKIT) may also
-             * need to specify that all "default" Browser instances (those created with
-             * style SWT.NONE) should use this renderer as well.  This may be needed in
-             * order to avoid incompatibilities that can arise from having multiple
-             * native renderers loaded within the same process.  A client can do this by
-             * setting the "org.eclipse.swt.browser.DefaultType" java system property to
-             * a value like "mozilla" or "webkit".
-             */
-
-            /*
-             * Plug-ins need an opportunity to set the org.eclipse.swt.browser.DefaultType
-             * system property before the first Browser is created.  To facilitate this,
-             * reflection is used to reference non-existent class
-             * org.eclipse.swt.browser.BrowserInitializer the first time a Browser is created.
-             * A client wishing to use this hook can do so by creating a fragment of
-             * org.eclipse.swt that implements this class and sets the system property in its
-             * static initializer.
-             */
             try {
-                Class.forName("org.eclipse.swt.browser.BrowserInitializer"); //$NON-NLS-1$
-            } catch (ClassNotFoundException e) {
-                /* no fragment is providing this class, which is the typical case */
+                webBrowser.create(parent, style);
+            } catch (Error error) {
+                this.proxy = new Browser(parent, style);
             }
-
-            String value = System.getProperty(PROPERTY_DEFAULTTYPE);
-            if (value != null) {
-                int index = 0;
-                int length = value.length();
-                do {
-                    int newIndex = value.indexOf(',', index);
-                    if (newIndex == -1) {
-                        newIndex = length;
-                    }
-                    String current = value.substring(index, newIndex).trim();
-                    if (current.equalsIgnoreCase("mozilla")) { //$NON-NLS-1$
-                        DefaultType = SWT.MOZILLA;
-                        break;
-                    } else if (current.equalsIgnoreCase("webkit")) { //$NON-NLS-1$
-                        DefaultType = SWT.WEBKIT;
-                        break;
-                    } else if (current.equalsIgnoreCase("ie") && "win32".equals(platform)) { //$NON-NLS-1$ //$NON-NLS-2$
-                        DefaultType = SWT.NONE;
-                        break;
-                    }
-                    index = newIndex + 1;
-                } while (index < length);
-            }
-            if (DefaultType == SWT.DEFAULT) {
-                DefaultType = SWT.NONE;
-            }
+            return;
         }
-
-        if ((style & (SWT.MOZILLA | SWT.WEBKIT)) == 0) {
-            style |= DefaultType;
-        }
-
-        if ((style & (SWT.MOZILLA | SWT.WEBKIT)) == (SWT.MOZILLA | SWT.WEBKIT)) {
-            style &= ~SWT.WEBKIT;
-        }
-        if ((style & SWT.MOZILLA) != 0 || (style & SWT.WEBKIT) != 0) {
-            return style;
-        }
-
-        if ("win32".equals(platform)) { //$NON-NLS-1$
-            /*
-             * For IE on win32 the border is supplied by the embedded browser, so remove
-             * the style so that the parent Composite will not draw a second border.
-             */
-            return style & ~SWT.BORDER;
-        }
-        return style;
     }
 
-    @Override
-    protected void checkWidget() {
-        super.checkWidget();
-    }
+    
+
+    
 
     /**
      * Clears all session cookies from all current Browser instances.
@@ -270,7 +161,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             proxy.addAuthenticationListener(listener);
         } else {
-            checkWidget();
+           
             if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
             webBrowser.addAuthenticationListener(listener);
         }
@@ -299,7 +190,6 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             proxy.addCloseWindowListener(listener);
         } else {
-            checkWidget();
             if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
             webBrowser.addCloseWindowListener(listener);
         }
@@ -329,7 +219,6 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             proxy.addLocationListener(listener);
         } else {
-            checkWidget();
             if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
             webBrowser.addLocationListener(listener);
         }
@@ -358,7 +247,6 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             proxy.addOpenWindowListener(listener);
         } else {
-            checkWidget();
             if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
             webBrowser.addOpenWindowListener(listener);
         }
@@ -384,7 +272,6 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             proxy.addProgressListener(listener);
         } else {
-            checkWidget();
             if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
             webBrowser.addProgressListener(listener);
         }
@@ -413,7 +300,6 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             proxy.addStatusTextListener(listener);
         } else {
-            checkWidget();
             if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
             webBrowser.addStatusTextListener(listener);
         }
@@ -439,7 +325,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             proxy.addTitleListener(listener);
         } else {
-            checkWidget();
+            
             if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
             webBrowser.addTitleListener(listener);
         }
@@ -465,7 +351,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             proxy.addVisibilityWindowListener(listener);
         } else {
-            checkWidget();
+            
             if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
             webBrowser.addVisibilityWindowListener(listener);
         }
@@ -487,7 +373,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             return proxy.back();
         } else {
-            checkWidget();
+            
             return webBrowser.back();
         }
 
@@ -518,7 +404,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             return proxy.execute(script);
         } else {
-            checkWidget();
+            
             if (script == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
             return webBrowser.execute(script);
         }
@@ -542,10 +428,11 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             return proxy.close();
         } else {
-            checkWidget();
+            
             if (webBrowser.close()) {
                 isClosing = true;
-                dispose();
+                //TODO Rivedere
+//                dispose();
                 isClosing = false;
                 return true;
             }
@@ -581,14 +468,14 @@ public class BrowserView extends Composite {
      * @param script the script with javascript commands
      * @return the return value, if any, of executing the script
      * @throws IllegalArgumentException <ul>
-     *                                     <li>ERROR_NULL_ARGUMENT - if the script is null</li>
-     *                                  </ul>
+     *                                                                                                       <li>ERROR_NULL_ARGUMENT - if the script is null</li>
+     *                                                                                                    </ul>
      * @throws SWTException             <ul>
-     *                                     <li>ERROR_FAILED_EVALUATE when the script evaluation causes a javascript error to be thrown</li>
-     *                                     <li>ERROR_INVALID_RETURN_VALUE when the script returns a value of unsupported type</li>
-     *                                     <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *                                     <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     *                                  </ul>
+     *                                                                                                       <li>ERROR_FAILED_EVALUATE when the script evaluation causes a javascript error to be thrown</li>
+     *                                                                                                       <li>ERROR_INVALID_RETURN_VALUE when the script returns a value of unsupported type</li>
+     *                                                                                                       <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                                                                                       <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                                                                                    </ul>
      * @see Browser#evaluate(String, boolean)
      * @see ProgressListener#completed(ProgressEvent)
      * @since 3.5
@@ -597,7 +484,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             return proxy.evaluate(script);
         } else {
-            checkWidget();
+            
             return evaluate(script, false);
         }
 
@@ -637,21 +524,21 @@ public class BrowserView extends Composite {
      * @param trusted <code>true> or <code>false</code> depending on the security context to be used
      * @return the return value, if any, of executing the script
      * @throws IllegalArgumentException <ul>
-     *                                     <li>ERROR_NULL_ARGUMENT - if the script is null</li>
-     *                                  </ul>
+     *                                                                                                       <li>ERROR_NULL_ARGUMENT - if the script is null</li>
+     *                                                                                                    </ul>
      * @throws SWTException             <ul>
-     *                                     <li>ERROR_FAILED_EVALUATE when the script evaluation causes a javascript error to be thrown</li>
-     *                                     <li>ERROR_INVALID_RETURN_VALUE when the script returns a value of unsupported type</li>
-     *                                     <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-     *                                     <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-     *                                  </ul>
+     *                                                                                                       <li>ERROR_FAILED_EVALUATE when the script evaluation causes a javascript error to be thrown</li>
+     *                                                                                                       <li>ERROR_INVALID_RETURN_VALUE when the script returns a value of unsupported type</li>
+     *                                                                                                       <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+     *                                                                                                       <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+     *                                                                                                    </ul>
      * @see ProgressListener#completed(ProgressEvent)
      */
     public Object evaluate(String script, boolean trusted) throws SWTException {
         if (proxy != null) {
             return proxy.evaluate(script, trusted);
         } else {
-            checkWidget();
+            
             if (script == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
             return webBrowser.evaluate(script, trusted);
         }
@@ -674,7 +561,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             return proxy.forward();
         } else {
-            checkWidget();
+            
             return webBrowser.forward();
         }
 
@@ -691,7 +578,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             return proxy.getBrowserType();
         } else {
-            checkWidget();
+            
             return webBrowser.getBrowserType();
         }
 
@@ -716,13 +603,13 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             return proxy.getJavascriptEnabled();
         } else {
-            checkWidget();
+            
             return webBrowser.jsEnabledOnNextPage;
         }
 
     }
 
-    @Override
+
     public int getStyle() {
         if (proxy != null) {
             return proxy.getStyle();
@@ -731,7 +618,8 @@ public class BrowserView extends Composite {
              * If SWT.BORDER was specified at creation time then getStyle() should answer
              * it even though it is removed for IE on win32 in checkStyle().
              */
-            return super.getStyle() | (userStyle & SWT.BORDER);
+            return 0;
+            //return super.getStyle() | (userStyle & SWT.BORDER);
         }
 
     }
@@ -755,7 +643,7 @@ public class BrowserView extends Composite {
              * If SWT.BORDER was specified at creation time then getStyle() should answer
              * it even though it is removed for IE on win32 in checkStyle().
              */
-            checkWidget();
+            
             return webBrowser.getText();
         }
     }
@@ -779,7 +667,7 @@ public class BrowserView extends Composite {
              * If SWT.BORDER was specified at creation time then getStyle() should answer
              * it even though it is removed for IE on win32 in checkStyle().
              */
-            checkWidget();
+            
             return webBrowser.getUrl();
         }
     }
@@ -804,7 +692,7 @@ public class BrowserView extends Composite {
              * If SWT.BORDER was specified at creation time then getStyle() should answer
              * it even though it is removed for IE on win32 in checkStyle().
              */
-            checkWidget();
+            
             return webBrowser.getWebBrowser();
         }
 
@@ -829,20 +717,21 @@ public class BrowserView extends Composite {
              * If SWT.BORDER was specified at creation time then getStyle() should answer
              * it even though it is removed for IE on win32 in checkStyle().
              */
-            checkWidget();
+            
             return webBrowser.isBackEnabled();
         }
 
     }
 
-    @Override
+
     public boolean isFocusControl() {
         if (proxy != null) {
             return proxy.isFocusControl();
         } else {
-            checkWidget();
+
             if (webBrowser.isFocusControl()) return true;
-            return super.isFocusControl();
+            return false;
+//            return super.isFocusControl();
         }
 
     }
@@ -862,7 +751,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             return proxy.isForwardEnabled();
         } else {
-            checkWidget();
+            
             return webBrowser.isForwardEnabled();
         }
 
@@ -881,7 +770,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             proxy.refresh();
         } else {
-            checkWidget();
+            
             webBrowser.refresh();
         }
 
@@ -905,7 +794,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             proxy.removeAuthenticationListener(listener);
         } else {
-            checkWidget();
+            
             if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
             webBrowser.removeAuthenticationListener(listener);
         }
@@ -930,7 +819,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             proxy.removeCloseWindowListener(listener);
         } else {
-            checkWidget();
+            
             if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
             webBrowser.removeCloseWindowListener(listener);
         }
@@ -955,7 +844,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             proxy.removeLocationListener(listener);
         } else {
-            checkWidget();
+            
             if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
             webBrowser.removeLocationListener(listener);
         }
@@ -980,7 +869,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             proxy.removeOpenWindowListener(listener);
         } else {
-            checkWidget();
+            
             if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
             webBrowser.removeOpenWindowListener(listener);
         }
@@ -1006,7 +895,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             proxy.removeProgressListener(listener);
         } else {
-            checkWidget();
+            
             if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
             webBrowser.removeProgressListener(listener);
         }
@@ -1031,7 +920,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             proxy.removeStatusTextListener(listener);
         } else {
-            checkWidget();
+            
             if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
             webBrowser.removeStatusTextListener(listener);
         }
@@ -1057,7 +946,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             proxy.removeTitleListener(listener);
         } else {
-            checkWidget();
+            
             if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
             webBrowser.removeTitleListener(listener);
         }
@@ -1083,7 +972,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             proxy.removeVisibilityWindowListener(listener);
         } else {
-            checkWidget();
+            
             if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
             webBrowser.removeVisibilityWindowListener(listener);
         }
@@ -1106,7 +995,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             proxy.setJavascriptEnabled(enabled);
         } else {
-            checkWidget();
+            
             webBrowser.jsEnabledOnNextPage = enabled;
         }
 
@@ -1138,7 +1027,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             return proxy.setText(html);
         } else {
-            checkWidget();
+            
             return setText(html, true);
         }
 
@@ -1179,7 +1068,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             return proxy.setText(html, trusted);
         } else {
-            checkWidget();
+            
             if (html == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
             return webBrowser.setText(html, trusted);
         }
@@ -1206,7 +1095,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             return proxy.setUrl(url);
         } else {
-            checkWidget();
+            
             return setUrl(url, null, null);
         }
 
@@ -1238,7 +1127,7 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             return proxy.setUrl(url, postData, headers);
         } else {
-            checkWidget();
+            
             if (url == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
             return webBrowser.setUrl(url, postData, headers);
         }
@@ -1258,9 +1147,13 @@ public class BrowserView extends Composite {
         if (proxy != null) {
             proxy.stop();
         } else {
-            checkWidget();
+            
             webBrowser.stop();
         }
 
+    }
+
+    public boolean isProxy(){
+        return proxy!=null;
     }
 }

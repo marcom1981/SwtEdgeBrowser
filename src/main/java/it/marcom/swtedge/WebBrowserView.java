@@ -536,75 +536,7 @@ abstract class WebBrowserView {
         visibilityWindowListeners = newVisibilityWindowListeners;
     }
 
-    boolean sendKeyEvent (Event event) {
-        int traversal = SWT.TRAVERSE_NONE;
-        boolean traverseDoit = true;
-        switch (event.keyCode) {
-            case SWT.ESC: {
-                traversal = SWT.TRAVERSE_ESCAPE;
-                traverseDoit = true;
-                break;
-            }
-            case SWT.CR: {
-                traversal = SWT.TRAVERSE_RETURN;
-                traverseDoit = false;
-                break;
-            }
-            case SWT.ARROW_DOWN:
-            case SWT.ARROW_RIGHT: {
-                traversal = SWT.TRAVERSE_ARROW_NEXT;
-                traverseDoit = false;
-                break;
-            }
-            case SWT.ARROW_UP:
-            case SWT.ARROW_LEFT: {
-                traversal = SWT.TRAVERSE_ARROW_PREVIOUS;
-                traverseDoit = false;
-                break;
-            }
-            case SWT.TAB: {
-                traversal = (event.stateMask & SWT.SHIFT) != 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
-                traverseDoit = (event.stateMask & SWT.CTRL) != 0;
-                break;
-            }
-            case SWT.PAGE_DOWN: {
-                if ((event.stateMask & SWT.CTRL) != 0) {
-                    traversal = SWT.TRAVERSE_PAGE_NEXT;
-                    traverseDoit = true;
-                }
-                break;
-            }
-            case SWT.PAGE_UP: {
-                if ((event.stateMask & SWT.CTRL) != 0) {
-                    traversal = SWT.TRAVERSE_PAGE_PREVIOUS;
-                    traverseDoit = true;
-                }
-                break;
-            }
-            default: {
-                if (translateMnemonics ()) {
-                    if (event.character != 0 && (event.stateMask & (SWT.ALT | SWT.CTRL)) == SWT.ALT) {
-                        traversal = SWT.TRAVERSE_MNEMONIC;
-                        traverseDoit = true;
-                    }
-                }
-                break;
-            }
-        }
 
-        boolean doit = true;
-        if (traversal != SWT.TRAVERSE_NONE) {
-            boolean oldEventDoit = event.doit;
-            event.doit = traverseDoit;
-            doit = !browser.traverse (traversal, event);
-            event.doit = oldEventDoit;
-        }
-        if (doit) {
-            browser.notifyListeners (event.type, event);
-            doit = event.doit;
-        }
-        return doit;
-    }
 
     public void setBrowser (BrowserView browser) {
         this.browser = browser;

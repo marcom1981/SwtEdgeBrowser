@@ -860,14 +860,15 @@ public:
     HRESULT res = CreateCoreWebView2EnvironmentWithDetails(
         nullptr, nullptr, nullptr,
         new webview2_com_handler(wnd, [&](ICoreWebView2Controller *webviewCtr) {
-          m_controller = webviewCtr;
+          m_controller = webviewCtr;		  
           m_controller->put_ParentWindow(wnd);
           m_controller->put_IsVisible(true);
           m_controller->get_CoreWebView2(&m_webview);
           flag.clear();
         }));
     if (res != S_OK) {
-      CoUninitialize();
+	  //TEMP WORK AROUND
+      //CoUninitialize();
       return false;
     }
     MSG msg = {};
@@ -988,7 +989,6 @@ private:
 class win32_edge_engine {
 public:
   win32_edge_engine(bool debug, void *window) {
-
     WNDCLASSEX wc;
     ZeroMemory(&wc, sizeof(WNDCLASSEX));
     wc.cbSize = sizeof(WNDCLASSEX);
@@ -1043,8 +1043,11 @@ public:
         std::bind(&win32_edge_engine::on_message, this, std::placeholders::_1);
 
     if (!m_browser->embed(m_window, debug, cb)) {
-      m_browser = std::make_unique<webview::edge_html>();
-      m_browser->embed(m_window, debug, cb);
+		//TEMP WORK AROUND
+		m_window = nullptr;
+		return;
+		//m_browser = std::make_unique<webview::edge_html>();
+		//m_browser->embed(m_window, debug, cb);
     }
 
     m_browser->resize(m_window);
