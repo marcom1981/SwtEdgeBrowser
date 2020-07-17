@@ -8,3 +8,11 @@ The current version requires Edge Canary to be work.
 The current version is based on SWT 4.7 and is still in the ALFA phase.
 
 The goal is to create a library that can use Windows Edge Chromium, Edge html and if it is not installed, automatically use the original SWT browser.
+
+Required Edge 84.0.522.39+ Now BETA Channel and SWT 4.7
+
+To Run demo use this class:
+it.marcom.swtedge.sample.SwtEdgeTest
+
+
+
