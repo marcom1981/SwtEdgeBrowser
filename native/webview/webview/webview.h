@@ -857,15 +857,38 @@ public:
     CoInitializeEx(nullptr, 0);
     std::atomic_flag flag = ATOMIC_FLAG_INIT;
     flag.test_and_set();
-    HRESULT res = CreateCoreWebView2EnvironmentWithDetails(
+    HRESULT res = CreateCoreWebView2EnvironmentWithOptions(
         nullptr, nullptr, nullptr,
         new webview2_com_handler(wnd, [&](ICoreWebView2Controller *webviewCtr) {
-          m_controller = webviewCtr;		  
-          m_controller->put_ParentWindow(wnd);
-          m_controller->put_IsVisible(true);
-          m_controller->get_CoreWebView2(&m_webview);
-          flag.clear();
+			if (webviewCtr != nullptr) {
+				m_controller = webviewCtr;
+				m_controller->put_ParentWindow(wnd);
+				m_controller->put_IsVisible(true);
+				m_controller->get_CoreWebView2(&m_webview);
+				flag.clear();
+			}
+			return S_OK;
         }));
+
+	/*HRESULT res = CreateCoreWebView2EnvironmentWithOptions(nullptr, nullptr, nullptr,
+		Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
+			[wnd](HRESULT result, ICoreWebView2Environment* env) -> HRESULT {
+
+		// Create a CoreWebView2Controller and get the associated CoreWebView2 whose parent is the main window hWnd
+		env->CreateCoreWebView2Controller(wnd, Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(
+			[wnd](HRESULT result, ICoreWebView2Controller* controller) -> HRESULT {
+			if (controller != nullptr) {
+				m_controller = controller;
+				m_controller->put_ParentWindow(wnd);
+				m_controller->put_IsVisible(true);
+				m_controller->get_CoreWebView2(&m_webview);
+				flag.clear();
+			}			
+
+			return S_OK;
+		}).Get());
+		return S_OK;
+	}).Get());*/
     if (res != S_OK) {
 	  //TEMP WORK AROUND
       //CoUninitialize();
@@ -1037,6 +1060,9 @@ public:
     } else {
       m_window = (HWND)window;
       SetWindowLongPtr(m_window, GWLP_USERDATA, (LONG_PTR)this);
+	  //auto style = GetWindowLong(m_window, GWL_STYLE);
+	  //style &= ~(WS_THICKFRAME);
+	  SetWindowLong(m_window, GWL_STYLE, WS_CHILD|WS_VISIBLE);
     }
 
     auto cb =
