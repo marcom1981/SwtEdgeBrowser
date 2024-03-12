@@ -1,4 +1,4 @@
-This software is archived now SWT supporto edge.
+This software is archived status, now SWT supporto edge.
 For major info visit:
 https://bugs.eclipse.org/bugs/show_bug.cgi?id=538991
 
